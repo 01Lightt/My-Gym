@@ -32,6 +32,13 @@ export const colors = {
   // Ações perigosas (excluir)
   danger: '#E04848',
 
+  // Gráficos: uma única cor para os dados (validada contra o fundo branco), grade discreta
+  chart: {
+    data: '#1A9BD7',
+    grid: '#E3E9EE',
+    empty: '#E6ECF1',
+  },
+
   // Cores de destaque (gradiente claro → escuro), usadas nos canais e nas fichas
   accent: {
     blue: ['#5CD0F5', '#1A9BD7'],

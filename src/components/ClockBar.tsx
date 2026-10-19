@@ -5,8 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WiiText } from '@/components/WiiText';
 import { useNow } from '@/hooks/useNow';
 import { colors, fonts, shadows, spacing } from '@/theme';
-
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+import { formatWeekdayDate } from '@/utils/date';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -26,9 +25,7 @@ export function ClockBar() {
         <WiiText style={[styles.clock, !colonVisible && styles.hidden]}>:</WiiText>
         <WiiText style={styles.clock}>{pad(now.getMinutes())}</WiiText>
       </View>
-      <WiiText style={styles.date}>
-        {WEEKDAYS[now.getDay()]} {pad(now.getDate())}/{pad(now.getMonth() + 1)}
-      </WiiText>
+      <WiiText style={styles.date}>{formatWeekdayDate(now.getTime())}</WiiText>
     </LinearGradient>
   );
 }

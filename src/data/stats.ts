@@ -42,6 +42,79 @@ export function bestWeight(exercise: WorkoutExercise) {
   return best;
 }
 
+/** 1RM estimado pela fórmula de Epley: carga × (1 + reps / 30). */
+export function estimateOneRepMax(weightKg: number, reps: number) {
+  return reps <= 1 ? weightKg : weightKg * (1 + reps / 30);
+}
+
+export type Metric = 'maxWeight' | 'volume' | 'oneRepMax';
+
+/** Valor de uma métrica para um exercício em um treino (só séries feitas); null se não houver dado. */
+function metricValue(exercise: WorkoutExercise, metric: Metric): number | null {
+  const done = exercise.sets.filter((set) => set.done && set.weightKg != null);
+  if (metric === 'maxWeight') return bestWeight(exercise);
+
+  const withReps = done.filter((set) => (set.reps ?? 0) > 0);
+  if (withReps.length === 0) return null;
+  if (metric === 'volume') return withReps.reduce((sum, set) => sum + set.weightKg! * set.reps!, 0);
+  return Math.max(...withReps.map((set) => estimateOneRepMax(set.weightKg!, set.reps!)));
+}
+
+export type SeriesPoint = { date: number; value: number; workoutId: string };
+
+/** Um ponto por treino em que o exercício (pelo nome) teve dado para a métrica, em ordem de data. */
+export function exerciseSeries(workouts: Workout[], key: string, metric: Metric): SeriesPoint[] {
+  const points: SeriesPoint[] = [];
+  for (const workout of [...workouts].sort((a, b) => a.startedAt - b.startedAt)) {
+    const values = workout.exercises
+      .filter((exercise) => exerciseKey(exercise.name) === key)
+      .map((exercise) => metricValue(exercise, metric))
+      .filter((value): value is number => value != null);
+    if (values.length === 0) continue;
+    // Mesmo exercício duas vezes no treino: soma o volume, pega o maior nas outras métricas
+    const value = metric === 'volume' ? values.reduce((a, b) => a + b, 0) : Math.max(...values);
+    points.push({ date: workout.startedAt, value, workoutId: workout.id });
+  }
+  return points;
+}
+
+export type ExerciseOption = { key: string; name: string; lastDate: number };
+
+/** Exercícios com pelo menos uma série feita, do treinado mais recentemente para o mais antigo. */
+export function exerciseOptions(workouts: Workout[]): ExerciseOption[] {
+  const byKey = new Map<string, ExerciseOption>();
+  for (const workout of workouts) {
+    for (const exercise of workout.exercises) {
+      if (!exercise.sets.some((set) => set.done)) continue;
+      const key = exerciseKey(exercise.name);
+      const current = byKey.get(key);
+      if (!current || workout.startedAt > current.lastDate) {
+        byKey.set(key, { key, name: exercise.name.trim(), lastDate: workout.startedAt });
+      }
+    }
+  }
+  return [...byKey.values()].sort((a, b) => b.lastDate - a.lastDate);
+}
+
+export type BestLift = { key: string; name: string; weightKg: number; date: number };
+
+/** Maior carga de todos os tempos em cada exercício, em ordem alfabética. */
+export function bestLifts(workouts: Workout[]): BestLift[] {
+  const byKey = new Map<string, BestLift>();
+  for (const workout of workouts) {
+    for (const exercise of workout.exercises) {
+      const best = bestWeight(exercise);
+      if (best == null) continue;
+      const key = exerciseKey(exercise.name);
+      const current = byKey.get(key);
+      if (!current || best > current.weightKg) {
+        byKey.set(key, { key, name: exercise.name.trim(), weightKg: best, date: workout.startedAt });
+      }
+    }
+  }
+  return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+}
+
 export type PersonalRecord = { name: string; weightKg: number; previousKg: number };
 
 /** Exercícios em que a maior carga do treino superou a maior carga de todos os treinos anteriores. */
