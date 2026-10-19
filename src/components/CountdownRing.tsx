@@ -1,14 +1,9 @@
-import { useEffect, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  useAnimatedProps,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
+import { useCountdownProgress } from '@/hooks/useCountdownProgress';
 import { colors, shadows } from '@/theme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -34,21 +29,7 @@ export function CountdownRing({ progress, countdown, size, color, strokeWidth = 
   const center = size / 2;
   const inner = size - strokeWidth * 2 - 16;
 
-  const fraction = useSharedValue(progress);
-  const endsAt = countdown?.endsAt;
-  const totalMs = countdown?.totalMs;
-
-  useEffect(() => {
-    cancelAnimation(fraction);
-    if (endsAt != null && totalMs) {
-      // Começa de onde o tempo realmente está e desce em linha reta até zero
-      const remaining = Math.max(0, endsAt - Date.now());
-      fraction.value = remaining / totalMs;
-      fraction.value = withTiming(0, { duration: remaining, easing: Easing.linear });
-    } else {
-      fraction.value = Math.min(1, Math.max(0, progress));
-    }
-  }, [fraction, progress, endsAt, totalMs]);
+  const fraction = useCountdownProgress(progress, countdown);
 
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: circumference * (1 - fraction.value),

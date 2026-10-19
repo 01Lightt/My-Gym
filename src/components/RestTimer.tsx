@@ -1,11 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useRef } from 'react';
 import { StyleSheet, Vibration, View } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { BouncyPressable } from '@/components/BouncyPressable';
 import { GlossyBubble } from '@/components/GlossyBubble';
 import { WiiText } from '@/components/WiiText';
 import { REST_DONE_MESSAGE_MS, REST_STEP_SECONDS } from '@/config/workout';
+import { useCountdownProgress } from '@/hooks/useCountdownProgress';
 import { useNow } from '@/hooks/useNow';
 import { colors, fonts, radius, shadows, spacing, type AccentName } from '@/theme';
 import { formatDuration } from '@/utils/format';
@@ -25,7 +27,10 @@ export function RestTimer({ endsAt, totalSeconds, accent, onAdjust, onClose }: P
   const now = useNow(250);
   const remainingMs = Math.max(0, endsAt - now);
   const finished = remainingMs === 0;
-  const progress = Math.min(1, remainingMs / (totalSeconds * 1000));
+
+  // A barra esvazia de forma contínua (Reanimated); só reinicia ao ajustar ±15 s
+  const fraction = useCountdownProgress(0, { endsAt, totalMs: totalSeconds * 1000 });
+  const fillStyle = useAnimatedStyle(() => ({ width: `${fraction.value * 100}%` }));
 
   // Guarda o onClose mais recente sem reiniciar o efeito a cada render
   const onCloseRef = useRef(onClose);
@@ -54,7 +59,7 @@ export function RestTimer({ endsAt, totalSeconds, accent, onAdjust, onClose }: P
           {finished ? 'Próxima série!' : formatDuration(remainingMs + 999)}
         </WiiText>
         <View style={styles.track}>
-          <View style={[styles.fill, { width: `${progress * 100}%`, backgroundColor: accentColor }]} />
+          <Animated.View style={[styles.fill, { backgroundColor: accentColor }, fillStyle]} />
         </View>
       </View>
 
