@@ -1,98 +1,64 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ChannelTile } from '@/components/ChannelTile';
+import { ClockBar } from '@/components/ClockBar';
+import { WiiBackground } from '@/components/WiiBackground';
+import { WiiText } from '@/components/WiiText';
+import { channels } from '@/config/channels';
+import { colors, spacing } from '@/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+const COLUMNS = 2;
 
+/** Menu principal: grade de blocos estilo canais do Wii + relógio embaixo. */
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+
+  const rows = [];
+  for (let i = 0; i < channels.length; i += COLUMNS) {
+    rows.push(channels.slice(i, i + COLUMNS));
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <WiiBackground>
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}>
+        <WiiText variant="display" style={styles.logo}>
+          My Academy
+        </WiiText>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {rows.map((row, i) => (
+          <View key={i} style={styles.row}>
+            {row.map((channel) => (
+              <ChannelTile key={channel.id} channel={channel} />
+            ))}
+            {/* Completa a linha para os blocos manterem o mesmo tamanho */}
+            {row.length < COLUMNS && <View style={styles.spacer} />}
+          </View>
+        ))}
+      </ScrollView>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <ClockBar />
+    </WiiBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  content: {
+    padding: spacing.md,
+    gap: spacing.md,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
+  logo: {
     textAlign: 'center',
+    color: colors.primary,
+    marginBottom: spacing.sm,
+    textShadowColor: colors.primaryLight,
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 0,
   },
-  code: {
-    textTransform: 'uppercase',
+  row: {
+    flexDirection: 'row',
+    gap: spacing.md,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  spacer: { flex: 1 },
 });
