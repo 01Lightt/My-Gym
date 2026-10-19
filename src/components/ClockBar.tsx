@@ -1,9 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WiiText } from '@/components/WiiText';
+import { useNow } from '@/hooks/useNow';
 import { colors, fonts, shadows, spacing } from '@/theme';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -13,12 +13,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 /** Barra inferior com relógio e data, igual à do menu do Wii (com os dois-pontos piscando). */
 export function ClockBar() {
   const insets = useSafeAreaInsets();
-  const [now, setNow] = useState(() => new Date());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  const now = new Date(useNow(1000));
 
   const colonVisible = now.getSeconds() % 2 === 0;
 

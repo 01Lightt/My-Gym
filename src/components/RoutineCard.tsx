@@ -11,10 +11,12 @@ import { plural } from '@/utils/format';
 type Props = {
   routine: RoutineInput & { exercises: RoutineExercise[] };
   onPress?: () => void;
+  /** 'open' mostra uma setinha; 'start' mostra um botão de play na cor da ficha. */
+  action?: 'open' | 'start';
 };
 
 /** Cartão grande de uma ficha: letra em destaque na cor escolhida + resumo dos exercícios. */
-export function RoutineCard({ routine, onPress }: Props) {
+export function RoutineCard({ routine, onPress, action = 'open' }: Props) {
   const { label, name, accent, exercises } = routine;
   const preview = exercises.map((e) => e.name).join(' · ');
 
@@ -40,7 +42,10 @@ export function RoutineCard({ routine, onPress }: Props) {
         ) : null}
       </View>
 
-      {onPress && <Ionicons name="chevron-forward" size={26} color={colors.tileBorder} />}
+      {onPress && action === 'open' && <Ionicons name="chevron-forward" size={26} color={colors.tileBorder} />}
+      {onPress && action === 'start' && (
+        <Ionicons name="play-circle" size={44} color={colors.accent[accent][1]} />
+      )}
     </BouncyPressable>
   );
 }
