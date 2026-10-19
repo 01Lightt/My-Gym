@@ -111,6 +111,11 @@ export function finishWorkout() {
   return workout.id;
 }
 
+/** Remove um treino finalizado do histórico. */
+export function deleteWorkout(id: string) {
+  historyStore.update((history) => history.filter((w) => w.id !== id));
+}
+
 export function discardWorkout() {
   activeStore.update(() => null);
 }

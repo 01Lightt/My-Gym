@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Vibration, View } from 'react-native';
 
+import { BouncyPressable } from '@/components/BouncyPressable';
 import { Card } from '@/components/Card';
 import { FrequencyCalendar } from '@/components/charts/FrequencyCalendar';
 import { LineChart } from '@/components/charts/LineChart';
@@ -20,9 +21,10 @@ import {
   type Metric,
   type SeriesPoint,
 } from '@/data/stats';
-import { useWorkoutHistory, type Workout } from '@/data/workouts';
+import { deleteWorkout, useWorkoutHistory, type Workout } from '@/data/workouts';
 import { useNow } from '@/hooks/useNow';
 import { colors, fonts, spacing } from '@/theme';
+import { confirmAction } from '@/utils/confirm';
 import { addDays, dayKey, formatShortDate, formatWeekdayDate, startOfMonth, startOfWeek } from '@/utils/date';
 import { formatDuration, formatNumber, formatWeight, plural } from '@/utils/format';
 
@@ -144,9 +146,10 @@ export default function EvolucaoScreen() {
               unit={metricInfo.unit}
             />
 
-            <WiiText variant="title" style={styles.section}>
-              Treinos no período
-            </WiiText>
+            <View style={styles.section}>
+              <WiiText variant="title">Treinos no período</WiiText>
+              <WiiText variant="label">Segure um treino para excluir</WiiText>
+            </View>
             {history.map((workout) => (
               <HistoryItem key={workout.id} workout={workout} />
             ))}
@@ -161,7 +164,9 @@ type ChartCardProps = { title: string; series: SeriesPoint[]; metric: Metric; un
 
 /** Gráfico do exercício com leitura do ponto selecionado e tabela com os mesmos dados. */
 function ExerciseChartCard({ title, series, metric, unit }: ChartCardProps) {
-  const [selected, setSelected] = useState(series.length - 1);
+  const [selectedIndex, setSelected] = useState(series.length - 1);
+  // Se um treino for excluído a lista encolhe: a seleção nunca passa do último ponto
+  const selected = Math.min(selectedIndex, series.length - 1);
   const [showTable, setShowTable] = useState(false);
   const point = series[selected];
 
@@ -229,25 +234,39 @@ function ExerciseChartCard({ title, series, metric, unit }: ChartCardProps) {
   );
 }
 
+/** Um treino da lista. Segurar o dedo em cima pede confirmação para excluir. */
 function HistoryItem({ workout }: { workout: Workout }) {
   const summary = summarizeWorkout(workout);
+
+  const remove = () => {
+    Vibration.vibrate(30);
+    confirmAction(
+      'Excluir treino?',
+      `O treino de ${formatWeekdayDate(workout.startedAt)} (${workout.name || `Treino ${workout.label}`}) será apagado do histórico, dos gráficos e dos recordes.`,
+      'Excluir',
+      () => deleteWorkout(workout.id),
+    );
+  };
+
   return (
-    <Card style={styles.historyCard}>
-      <GlossyBubble accent={workout.accent} size={48} shape="rounded">
-        <WiiText style={styles.historyLetter}>{workout.label}</WiiText>
-      </GlossyBubble>
-      <View style={styles.flex}>
-        <WiiText style={styles.historyTitle} numberOfLines={1}>
-          {workout.name || `Treino ${workout.label}`}
-        </WiiText>
-        <WiiText variant="label">
-          {formatWeekdayDate(workout.startedAt)} · {formatDuration(summary.durationMs)}
-        </WiiText>
-        <WiiText variant="label">
-          {plural(summary.setsDone, 'série', 'séries')} · {formatNumber(summary.volumeKg)} kg de volume
-        </WiiText>
-      </View>
-    </Card>
+    <BouncyPressable onLongPress={remove}>
+      <Card style={styles.historyCard}>
+        <GlossyBubble accent={workout.accent} size={48} shape="rounded">
+          <WiiText style={styles.historyLetter}>{workout.label}</WiiText>
+        </GlossyBubble>
+        <View style={styles.flex}>
+          <WiiText style={styles.historyTitle} numberOfLines={1}>
+            {workout.name || `Treino ${workout.label}`}
+          </WiiText>
+          <WiiText variant="label">
+            {formatWeekdayDate(workout.startedAt)} · {formatDuration(summary.durationMs)}
+          </WiiText>
+          <WiiText variant="label">
+            {plural(summary.setsDone, 'série', 'séries')} · {formatNumber(summary.volumeKg)} kg de volume
+          </WiiText>
+        </View>
+      </Card>
+    </BouncyPressable>
   );
 }
 
