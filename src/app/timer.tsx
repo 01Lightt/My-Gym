@@ -85,17 +85,23 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
   };
   const backToSetup = () => setStatus('setup');
 
-  const progress = status === 'setup' || finished ? 1 : remaining / totalMs;
+  // Correndo: o anel se anima sozinho até endsAt. Parado: mostra uma fração fixa.
+  const counting = status === 'running' && !finished;
+  const progress = status === 'paused' ? pausedRemaining / totalMs : 1;
   const label =
     status === 'setup' ? 'Quanto tempo?' : finished ? 'Próxima série!' : status === 'paused' ? 'Pausado' : 'Descansando';
 
   return (
     <ScreenLayout title="Descanso">
-      {status === 'running' && !finished && <StayAwake />}
+      {counting && <StayAwake />}
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <PopIn key={finished ? 'done' : 'counting'}>
-          <CountdownRing progress={progress} size={ringSize} color={finished ? RING_DONE_COLOR : RING_COLOR}>
+          <CountdownRing
+            progress={progress}
+            countdown={counting ? { endsAt, totalMs } : null}
+            size={ringSize}
+            color={finished ? RING_DONE_COLOR : RING_COLOR}>
             <WiiText variant="label" style={styles.label}>
               {label}
             </WiiText>
@@ -123,7 +129,7 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
           {status === 'setup' && (
             <WiiButton label="Começar" icon="play" accent="green" onPress={start} disabled={typedSeconds <= 0} />
           )}
-          {status === 'running' && !finished && (
+          {counting && (
             <>
               <WiiButton label="Pausar" icon="pause" accent="orange" onPress={pause} />
               <WiiButton label="Cancelar" icon="stop" accent="red" variant="outline" onPress={backToSetup} />
