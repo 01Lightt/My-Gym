@@ -1,40 +1,50 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BouncyPressable } from '@/components/BouncyPressable';
 import { WiiBackground } from '@/components/WiiBackground';
+import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
-import { colors, fonts, radius, shadows, spacing } from '@/theme';
+import { colors, spacing } from '@/theme';
 
-type Props = { title: string; children: ReactNode };
+type Props = {
+  title: string;
+  /** "menu" volta para o menu principal; "voltar" volta uma tela. */
+  back?: 'menu' | 'voltar';
+  children: ReactNode;
+};
 
-/** Layout padrão das telas internas: título no topo e botão "Menu" em pílula embaixo, como nos canais do Wii. */
-export function ScreenLayout({ title, children }: Props) {
+/** Layout padrão das telas internas: título no topo e botão em pílula embaixo, como nos canais do Wii. */
+export function ScreenLayout({ title, back = 'menu', children }: Props) {
   const insets = useSafeAreaInsets();
+
+  const goBack = () => {
+    if (back === 'menu') router.dismissTo('/');
+    else if (router.canGoBack()) router.back();
+    else router.replace('/');
+  };
 
   return (
     <WiiBackground>
       <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
-        <WiiText variant="title" style={styles.title}>
+        <WiiText variant="title" style={styles.title} numberOfLines={1}>
           {title}
         </WiiText>
       </View>
 
-      <View style={styles.content}>{children}</View>
+      <KeyboardAvoidingView
+        style={styles.content}
+        behavior={Platform.OS === 'web' ? undefined : 'padding'}>
+        {children}
+      </KeyboardAvoidingView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>
-        <BouncyPressable style={styles.menuButton} onPress={() => router.back()}>
-          <LinearGradient
-            colors={[colors.accent.blue[0], colors.accent.blue[1]]}
-            style={styles.menuButtonInner}>
-            <Ionicons name="home" size={20} color={colors.textOnColor} />
-            <WiiText style={styles.menuButtonText}>Menu</WiiText>
-          </LinearGradient>
-        </BouncyPressable>
+        <WiiButton
+          label={back === 'menu' ? 'Menu' : 'Voltar'}
+          icon={back === 'menu' ? 'home' : 'arrow-back'}
+          onPress={goBack}
+        />
       </View>
     </WiiBackground>
   );
@@ -43,27 +53,13 @@ export function ScreenLayout({ title, children }: Props) {
 const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
     borderBottomWidth: 2,
     borderColor: colors.tileBorder,
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
   title: { color: colors.primaryDark, fontSize: 28 },
-  content: { flex: 1, padding: spacing.md },
+  content: { flex: 1 },
   footer: { alignItems: 'center', paddingTop: spacing.sm },
-  menuButton: {
-    borderRadius: radius.pill,
-    borderWidth: 2,
-    borderColor: colors.textOnColor,
-    boxShadow: shadows.button,
-    overflow: 'hidden',
-  },
-  menuButtonInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.xl,
-  },
-  menuButtonText: { color: colors.textOnColor, fontFamily: fonts.bold, fontSize: 18 },
 });

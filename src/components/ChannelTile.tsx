@@ -1,27 +1,25 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { BouncyPressable } from '@/components/BouncyPressable';
+import { GlossyBubble } from '@/components/GlossyBubble';
 import { WiiText } from '@/components/WiiText';
 import type { Channel } from '@/config/channels';
 import { colors, radius, shadows, spacing } from '@/theme';
 
 /** Um bloco do menu principal, no formato dos canais do Wii. */
 export function ChannelTile({ channel }: { channel: Channel }) {
-  const accent = colors.accent[channel.accent];
-
   return (
     <BouncyPressable
       containerStyle={styles.container}
       style={styles.tile}
       onPress={() => router.push(channel.route)}>
       <LinearGradient colors={[colors.tileTop, colors.tileBottom]} style={styles.inner}>
-        <LinearGradient colors={accent} style={styles.iconBubble}>
-          <View style={styles.gloss} />
+        <GlossyBubble accent={channel.accent} size={76} style={styles.bubble}>
           <Ionicons name={channel.icon} size={38} color={colors.textOnColor} />
-        </LinearGradient>
+        </GlossyBubble>
         <WiiText variant="title" style={styles.title}>
           {channel.title}
         </WiiText>
@@ -46,25 +44,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.sm,
   },
-  iconBubble: {
-    width: 76,
-    height: 76,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-    boxShadow: shadows.button,
-    overflow: 'hidden',
-  },
-  // Brilho no topo da bolha, dando o aspecto "plástico" do Wii
-  gloss: {
-    position: 'absolute',
-    top: 4,
-    left: 10,
-    right: 10,
-    height: 30,
-    borderRadius: radius.pill,
-    backgroundColor: 'rgba(255, 255, 255, 0.35)',
-  },
+  bubble: { marginBottom: spacing.sm },
   title: { fontSize: 20 },
 });

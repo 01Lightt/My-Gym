@@ -29,13 +29,18 @@ export const colors = {
   barBottom: '#D5DEE5',
   barBorder: '#BCC7D0',
 
-  // Cores de destaque de cada canal
+  // Ações perigosas (excluir)
+  danger: '#E04848',
+
+  // Cores de destaque (gradiente claro → escuro), usadas nos canais e nas fichas
   accent: {
     blue: ['#5CD0F5', '#1A9BD7'],
     green: ['#9BE05A', '#4DAA1E'],
     orange: ['#FFC15C', '#F08A12'],
     red: ['#FF8A8A', '#E04848'],
     purple: ['#C7A3F0', '#8C5CD1'],
+    pink: ['#FFA3D1', '#E0559B'],
+    teal: ['#6EE0D0', '#18A99A'],
   },
 } as const;
 

@@ -13,7 +13,7 @@ export function WiiBackground({ children }: { children: ReactNode }) {
     <LinearGradient
       colors={[colors.backgroundTop, colors.backgroundBottom]}
       style={styles.fill}>
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <View pointerEvents="none" style={styles.lines}>
         {Array.from({ length: LINE_COUNT }, (_, i) => (
           <View key={i} style={[styles.line, { top: i * LINE_GAP }]} />
         ))}
@@ -24,7 +24,8 @@ export function WiiBackground({ children }: { children: ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
+  fill: { flex: 1, overflow: 'hidden' },
+  lines: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, overflow: 'hidden' },
   line: {
     position: 'absolute',
     left: 0,
