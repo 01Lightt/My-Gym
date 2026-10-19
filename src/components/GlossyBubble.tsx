@@ -4,23 +4,30 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { colors, radius, shadows, type AccentName } from '@/theme';
 
+const RING_WIDTH = 3;
+
 type Props = {
   accent: AccentName;
   size: number;
   /** Cantos: círculo (padrão) ou quadrado arredondado. */
   shape?: 'circle' | 'rounded';
+  /**
+   * Cor de um anel em volta da bolha (ex.: para marcar como selecionada).
+   * Fica em uma View separada: borda/transform direto no gradiente renderiza errado no Android.
+   */
+  ringColor?: string;
   style?: StyleProp<ViewStyle>;
   children?: ReactNode;
 };
 
 /** Bolha colorida com brilho no topo — o aspecto "plástico" dos ícones do Wii. */
-export function GlossyBubble({ accent, size, shape = 'circle', style, children }: Props) {
+export function GlossyBubble({ accent, size, shape = 'circle', ringColor, style, children }: Props) {
   const borderRadius = shape === 'circle' ? radius.pill : size * 0.28;
 
-  return (
+  const bubble = (
     <LinearGradient
       colors={colors.accent[accent]}
-      style={[styles.bubble, { width: size, height: size, borderRadius }, style]}>
+      style={[styles.bubble, { width: size, height: size, borderRadius }, ringColor === undefined && style]}>
       <View
         style={[
           styles.gloss,
@@ -29,6 +36,19 @@ export function GlossyBubble({ accent, size, shape = 'circle', style, children }
       />
       {children}
     </LinearGradient>
+  );
+
+  if (ringColor === undefined) return bubble;
+
+  return (
+    <View
+      style={[
+        styles.ring,
+        { borderColor: ringColor, borderRadius: shape === 'circle' ? radius.pill : borderRadius + RING_WIDTH },
+        style,
+      ]}>
+      {bubble}
+    </View>
   );
 }
 
@@ -43,4 +63,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'rgba(255, 255, 255, 0.35)',
   },
+  ring: { borderWidth: RING_WIDTH },
 });

@@ -20,7 +20,11 @@ export function ColorPicker({ label, value, onChange }: Props) {
           const selected = accent === value;
           return (
             <BouncyPressable key={accent} onPress={() => onChange(accent)}>
-              <GlossyBubble accent={accent} size={40} style={selected && styles.selected}>
+              <GlossyBubble
+                accent={accent}
+                size={38}
+                ringColor={selected ? colors.accent[accent][1] : 'transparent'}>
+
                 {selected && <Ionicons name="checkmark" size={24} color={colors.textOnColor} />}
               </GlossyBubble>
             </BouncyPressable>
@@ -34,6 +38,5 @@ export function ColorPicker({ label, value, onChange }: Props) {
 const styles = StyleSheet.create({
   field: { gap: spacing.xs },
   label: { fontFamily: fonts.bold, fontSize: 15, marginLeft: spacing.xs },
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  selected: { borderWidth: 3, borderColor: colors.textOnColor, transform: [{ scale: 1.15 }] },
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
 });

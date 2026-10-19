@@ -49,7 +49,7 @@ export default function ResultadoScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <PopIn>
           <LinearGradient colors={colors.accent[workout.accent]} style={styles.banner}>
-            <GlossyBubble accent="orange" size={84} style={styles.trophy}>
+            <GlossyBubble accent="orange" size={84} ringColor={colors.textOnColor} style={styles.trophy}>
               <Ionicons name="trophy" size={46} color={colors.textOnColor} />
             </GlossyBubble>
             <WiiText style={styles.bannerTitle}>Treino concluído!</WiiText>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     borderColor: colors.textOnColor,
     boxShadow: shadows.tile,
   },
-  trophy: { borderWidth: 3, borderColor: colors.textOnColor, marginBottom: spacing.sm },
+  trophy: { marginBottom: spacing.sm },
   bannerTitle: {
     fontFamily: fonts.black,
     fontSize: 32,
