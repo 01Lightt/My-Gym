@@ -4,7 +4,8 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { colors, radius, shadows, type AccentName } from '@/theme';
 
-const RING_WIDTH = 3;
+/** Espessura do anel opcional (`ringColor`), somada em volta da bolha. */
+export const RING_WIDTH = 3;
 
 type Props = {
   accent: AccentName;
