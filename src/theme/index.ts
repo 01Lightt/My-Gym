@@ -25,16 +25,20 @@ export const colors = {
   tileBottom: '#F0F0F0',
   tileBorder: '#CFCFCF',
 
-  // Espaços vazios da grade do menu (blocos cinza com "Wii" em relevo)
-  emptySlot: ['#CDCDCE', '#BCBDBE'],
-  emptySlotBorder: '#DADADA',
-  emptySlotText: 'rgba(255, 255, 255, 0.5)',
+  // Espaços vazios da grade do menu (medidos no Menu do Wii: cinza claro, mais claro embaixo, contorno fino)
+  emptySlot: ['#D7D7D7', '#CBCBCB', '#DEDEDE'],
+  emptySlotBorder: '#C0C0C0',
+  emptySlotText: '#E4E4E4',
 
-  // Barra inferior do menu
-  barTop: '#E2E2E5',
-  barBottom: '#CDCFD7',
+  // Moldura em relevo dos canais (como os botões do Wii, ex.: o da chave de configurações)
+  channelFrame: ['#FAFAFA', '#E3E5E4', '#C2C6C5'],
+
+  // Barra inferior do menu: mais escura logo abaixo da linha e clareando para baixo
+  barTop: '#B1B3B8',
+  barBottom: '#D2D4DA',
   barLine: '#34BEED',
   clock: '#8E8F91',
+  date: '#5E5F63',
 
   // Ações perigosas (excluir)
   danger: '#E04848',

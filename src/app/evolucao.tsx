@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Vibration, View } from 'react-native';
+import { StyleSheet, Vibration, View } from 'react-native';
 
 import { BouncyPressable } from '@/components/BouncyPressable';
 import { Card } from '@/components/Card';
@@ -8,7 +8,7 @@ import { FrequencyCalendar } from '@/components/charts/FrequencyCalendar';
 import { LineChart } from '@/components/charts/LineChart';
 import { EmptyState } from '@/components/EmptyState';
 import { GlossyBubble } from '@/components/GlossyBubble';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { SegmentedPills } from '@/components/SegmentedPills';
 import { StatTile } from '@/components/StatTile';
 import { WiiButton } from '@/components/WiiButton';
@@ -58,14 +58,14 @@ export default function EvolucaoScreen() {
   if (ready && workouts.length === 0) {
     return (
       <ScreenLayout title="Evolução">
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScreenScrollView contentContainerStyle={styles.content}>
           <EmptyState
             icon="stats-chart"
             title="Nenhum treino ainda"
             description="Finalize um treino na tela Treinar para ver sua evolução aqui."
           />
           <WiiButton label="Ir para Treinar" icon="barbell" onPress={() => router.push('/treinar')} />
-        </ScrollView>
+        </ScreenScrollView>
       </ScreenLayout>
     );
   }
@@ -88,7 +88,7 @@ export default function EvolucaoScreen() {
 
   return (
     <ScreenLayout title="Evolução">
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScreenScrollView contentContainerStyle={styles.content}>
         <View style={styles.grid}>
           <View style={styles.gridItem}>
             <StatTile icon="calendar" label="Treinos esta semana" value={String(weekCount)} accent="blue" />
@@ -155,7 +155,7 @@ export default function EvolucaoScreen() {
             ))}
           </>
         )}
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

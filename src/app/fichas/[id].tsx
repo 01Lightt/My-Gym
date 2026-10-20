@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { ExerciseItem } from '@/components/ExerciseItem';
 import { RoutineCard } from '@/components/RoutineCard';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { moveExercise, useRoutine } from '@/data/routines';
@@ -19,9 +19,9 @@ export default function FichaScreen() {
     return (
       <ScreenLayout title="Ficha" back="voltar">
         {ready && (
-          <ScrollView contentContainerStyle={styles.content}>
+          <ScreenScrollView contentContainerStyle={styles.content}>
             <EmptyState icon="help-circle" title="Ficha não encontrada" description="Ela pode ter sido excluída." />
-          </ScrollView>
+          </ScreenScrollView>
         )}
       </ScreenLayout>
     );
@@ -36,7 +36,7 @@ export default function FichaScreen() {
 
   return (
     <ScreenLayout title={`Ficha ${routine.label}`} back="voltar">
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScreenScrollView contentContainerStyle={styles.content}>
         <RoutineCard routine={routine} />
         <WiiButton
           label="Editar ficha"
@@ -73,7 +73,7 @@ export default function FichaScreen() {
         ))}
 
         <WiiButton label="Adicionar exercício" icon="add" accent={accent} onPress={() => openExercise()} />
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

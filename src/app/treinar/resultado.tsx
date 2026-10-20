@@ -1,12 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlossyBubble } from '@/components/GlossyBubble';
 import { PopIn } from '@/components/PopIn';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { StatTile } from '@/components/StatTile';
 import { WiiText } from '@/components/WiiText';
 import { findRecords, summarizeWorkout } from '@/data/stats';
@@ -26,9 +26,9 @@ export default function ResultadoScreen() {
     return (
       <ScreenLayout title="Resultado">
         {ready && (
-          <ScrollView contentContainerStyle={styles.content}>
+          <ScreenScrollView contentContainerStyle={styles.content}>
             <EmptyState icon="help-circle" title="Treino não encontrado" description="Ele pode ter sido excluído." />
-          </ScrollView>
+          </ScreenScrollView>
         )}
       </ScreenLayout>
     );
@@ -46,7 +46,7 @@ export default function ResultadoScreen() {
 
   return (
     <ScreenLayout title="Resultado">
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScreenScrollView contentContainerStyle={styles.content}>
         <PopIn>
           <LinearGradient colors={colors.accent[workout.accent]} style={styles.banner}>
             <GlossyBubble accent="orange" size={84} ringColor={colors.textOnColor} style={styles.trophy}>
@@ -88,7 +88,7 @@ export default function ResultadoScreen() {
             </View>
           </PopIn>
         )}
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

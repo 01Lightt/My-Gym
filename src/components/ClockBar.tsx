@@ -6,18 +6,22 @@ import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { SevenSegment } from '@/components/SevenSegment';
 import { WiiText } from '@/components/WiiText';
 import { useNow } from '@/hooks/useNow';
-import { colors, fonts, spacing } from '@/theme';
+import { colors, fonts } from '@/theme';
 import { formatWeekdayDate } from '@/utils/date';
 
-/** Quanto a linha ciano desce no meio da barra (px). */
-const DIP = 26;
 /** Altura dos dígitos do relógio. */
-const DIGIT_HEIGHT = 38;
-/** Altura do conteúdo abaixo da curva (relógio + data + respiro). */
-const CONTENT_HEIGHT = DIGIT_HEIGHT + 44;
+const DIGIT_HEIGHT = 28;
+/**
+ * Quanto a linha ciano desce no meio. Como no Menu do Wii, ela passa por baixo do relógio:
+ * a hora fica na área clara de cima (junto com o menu) e a data na barra escura de baixo.
+ */
+const DIP = DIGIT_HEIGHT + 18;
+/** Altura da barra escura abaixo do "vale" (onde fica a data). */
+const DATE_AREA = 48;
 
-// Onde a curva começa e termina, em fração da largura (medido no Menu do Wii original)
-const CURVE = { a: 0.17, b: 0.32, c: 0.68, d: 0.83 };
+// Onde a curva começa e termina, em fração da largura. A descida é larga e suave,
+// como no Menu do Wii (numa tela de celular o vale é mais fundo, então a curva precisa de mais espaço).
+const CURVE = { a: 0.1, b: 0.3, c: 0.7, d: 0.9 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -34,12 +38,12 @@ function edgePath(width: number) {
   );
 }
 
-/** Barra inferior do Menu do Wii: cinza com linha ciano curva, relógio LCD e data. */
+/** Barra inferior do Menu do Wii: linha ciano curva, relógio LCD em cima e data na barra escura. */
 export function ClockBar() {
   const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
   const now = new Date(useNow(1000));
-  const height = DIP + CONTENT_HEIGHT + insets.bottom;
+  const height = DIP + DATE_AREA + insets.bottom;
   const edge = width > 0 ? edgePath(width) : '';
 
   return (
@@ -49,23 +53,29 @@ export function ClockBar() {
           <Defs>
             <LinearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor={colors.barTop} />
+              <Stop offset="0.55" stopColor={colors.barBottom} />
               <Stop offset="1" stopColor={colors.barBottom} />
             </LinearGradient>
           </Defs>
           <Path d={`${edge} L${width},${height} L0,${height} Z`} fill="url(#bar)" />
-          {/* Reflexo branco logo abaixo da linha, e a linha ciano por cima */}
-          <Path d={edge} transform="translate(0, 2.5)" stroke="#FFFFFF" strokeOpacity={0.9} strokeWidth={2} fill="none" />
+          {/* Brilho branco logo acima da linha, e a linha ciano por cima */}
+          <Path d={edge} transform="translate(0, -2.5)" stroke="#FFFFFF" strokeOpacity={0.9} strokeWidth={2} fill="none" />
           <Path d={edge} stroke={colors.barLine} strokeWidth={2.5} fill="none" />
         </Svg>
       )}
 
-      <View style={[styles.content, { paddingTop: DIP + spacing.sm }]}>
+      {/* Hora: no "bolso" claro acima da linha */}
+      <View style={[styles.clock, { top: (DIP - DIGIT_HEIGHT) / 2 }]}>
         <SevenSegment
           text={`${pad(now.getHours())}:${pad(now.getMinutes())}`}
           height={DIGIT_HEIGHT}
           color={colors.clock}
           colonVisible={now.getSeconds() % 2 === 0}
         />
+      </View>
+
+      {/* Data: na barra escura, abaixo da linha */}
+      <View style={[styles.dateRow, { top: DIP + 8 }]}>
         <WiiText style={styles.date}>{formatWeekdayDate(now.getTime())}</WiiText>
       </View>
     </View>
@@ -73,6 +83,7 @@ export function ClockBar() {
 }
 
 const styles = StyleSheet.create({
-  content: { alignItems: 'center', gap: spacing.xs },
-  date: { fontFamily: fonts.bold, fontSize: 18, color: colors.clock },
+  clock: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  dateRow: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  date: { fontFamily: fonts.bold, fontSize: 19, color: colors.date },
 });

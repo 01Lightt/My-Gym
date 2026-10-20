@@ -1,21 +1,22 @@
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, TextInput, useWindowDimensions, Vibration, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, useWindowDimensions, Vibration, View } from 'react-native';
 
 import { CountdownRing } from '@/components/CountdownRing';
 import { PopIn } from '@/components/PopIn';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { setLastRestSeconds, useLastRestSeconds } from '@/data/restTimer';
 import { useNow } from '@/hooks/useNow';
 import { colors, fonts, radius, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
+import { useTimerNotification } from '@/utils/notifications';
 
 const PLIM = require('@/assets/sounds/plim.wav');
 
-/** Cor do anel enquanto conta (a mesma do bloco "Descanso" no menu) e quando termina. */
+/** Cor do anel enquanto conta (a mesma do bloco "Timer" no menu) e quando termina. */
 const RING_COLOR = colors.accent.red[1];
 const RING_DONE_COLOR = colors.accent.green[1];
 
@@ -29,7 +30,7 @@ const toInt = (text: string) => parseInt(text.replace(/\D/g, ''), 10) || 0;
 export default function TimerScreen() {
   const { seconds, ready } = useLastRestSeconds();
   // Espera carregar o último tempo usado para os campos já começarem preenchidos
-  if (!ready) return <ScreenLayout title="Descanso">{null}</ScreenLayout>;
+  if (!ready) return <ScreenLayout title="Timer">{null}</ScreenLayout>;
   return <RestTimer initialSeconds={seconds} />;
 }
 
@@ -54,6 +55,13 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
   const remaining =
     status === 'running' ? Math.max(0, endsAt - now) : status === 'paused' ? pausedRemaining : totalMs;
   const finished = status === 'running' && remaining === 0;
+
+  // Avisa no celular quando o tempo acabar, se o app estiver em segundo plano
+  useTimerNotification(
+    status === 'running' ? endsAt : null,
+    'Tempo esgotado!',
+    `Seu timer de ${formatDuration(totalMs)} terminou.`,
+  );
 
   // Fim do descanso: vibra e toca o "plim" uma vez
   useEffect(() => {
@@ -92,10 +100,10 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
     status === 'setup' ? 'Quanto tempo?' : finished ? 'Próxima série!' : status === 'paused' ? 'Pausado' : 'Descansando';
 
   return (
-    <ScreenLayout title="Descanso">
+    <ScreenLayout title="Timer">
       {counting && <StayAwake />}
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScreenScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <PopIn key={finished ? 'done' : 'counting'}>
           <CountdownRing
             progress={progress}
@@ -148,7 +156,7 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
             </>
           )}
         </View>
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

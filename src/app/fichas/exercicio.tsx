@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { Stepper } from '@/components/Stepper';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiInput } from '@/components/WiiInput';
@@ -58,7 +58,7 @@ function ExercicioForm({ routine, existing }: { routine?: Routine; existing?: Ro
 
   return (
     <ScreenLayout title={existing ? 'Editar exercício' : 'Novo exercício'} back="voltar">
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScreenScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <WiiInput
           label="Exercício"
           value={name}
@@ -94,7 +94,7 @@ function ExercicioForm({ routine, existing }: { routine?: Routine; existing?: Ro
         {existing && (
           <WiiButton label="Excluir exercício" icon="trash" accent="red" variant="outline" onPress={remove} />
         )}
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

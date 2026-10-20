@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { RestTimer } from '@/components/RestTimer';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView, useFooterSpace } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { WorkoutExerciseCard } from '@/components/WorkoutExerciseCard';
@@ -22,6 +22,7 @@ import { useNow } from '@/hooks/useNow';
 import { colors, fonts, radius, spacing } from '@/theme';
 import { confirmAction } from '@/utils/confirm';
 import { formatDuration } from '@/utils/format';
+import { useTimerNotification } from '@/utils/notifications';
 
 type Rest = { endsAt: number; totalSeconds: number };
 
@@ -32,18 +33,21 @@ export default function SessaoScreen() {
   const { workout, ready } = useActiveWorkout();
   const [rest, setRest] = useState<Rest | null>(null);
   const now = useNow(1000);
+  const footerSpace = useFooterSpace();
+  // Avisa no celular quando o descanso acabar, se o app estiver em segundo plano
+  useTimerNotification(rest?.endsAt ?? null, 'Hora da próxima série!', 'Seu descanso acabou.');
 
   if (!workout) {
     return (
       <ScreenLayout title="Treino" back="voltar">
         {ready && (
-          <ScrollView contentContainerStyle={styles.content}>
+          <ScreenScrollView contentContainerStyle={styles.content}>
             <EmptyState
               icon="barbell"
               title="Nenhum treino em andamento"
               description="Escolha uma ficha na tela Treinar para começar."
             />
-          </ScrollView>
+          </ScreenScrollView>
         )}
       </ScreenLayout>
     );
@@ -112,7 +116,7 @@ export default function SessaoScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <ScreenScrollView
         contentContainerStyle={[styles.content, rest && styles.contentWithTimer]}
         keyboardShouldPersistTaps="handled">
         {workout.exercises.map((exercise, exerciseIndex) => (
@@ -130,10 +134,10 @@ export default function SessaoScreen() {
 
         <WiiButton label="Finalizar treino" icon="flag" accent="green" onPress={finish} />
         <WiiButton label="Descartar treino" icon="trash" accent="red" variant="outline" onPress={discard} />
-      </ScrollView>
+      </ScreenScrollView>
 
       {rest && (
-        <View style={styles.timer}>
+        <View style={[styles.timer, { bottom: footerSpace }]}>
           <RestTimer
             endsAt={rest.endsAt}
             totalSeconds={rest.totalSeconds}
@@ -171,5 +175,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressFill: { height: '100%', borderRadius: radius.pill },
-  timer: { position: 'absolute', left: spacing.md, right: spacing.md, bottom: spacing.sm },
+  // Fica logo acima do botão Voltar flutuante (o "bottom" vem do useFooterSpace)
+  timer: { position: 'absolute', left: spacing.md, right: spacing.md },
 });

@@ -179,3 +179,5 @@ writePng('android-icon-monochrome.png', 1024, render(1024, { mono: true, tileSca
 // Tela de abertura e favicon (web)
 writePng('splash-icon.png', 512, render(512, { tileScale: 0.96 }));
 writePng('favicon.png', 48, render(48, { background: true, tileScale: 0.86 }));
+// Ícone da notificação no Android: silhueta branca sobre fundo transparente
+writePng('notification-icon.png', 96, render(96, { mono: true, tileScale: 1.15 }));

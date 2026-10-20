@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ColorPicker } from '@/components/ColorPicker';
 import { RoutineCard } from '@/components/RoutineCard';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiInput } from '@/components/WiiInput';
 import { WiiText } from '@/components/WiiText';
@@ -61,7 +61,7 @@ function FichaForm({ routines, existing }: { routines: Routine[]; existing?: Rou
 
   return (
     <ScreenLayout title={existing ? 'Editar ficha' : 'Nova ficha'} back="voltar">
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScreenScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <WiiText variant="label" style={styles.previewLabel}>
           Prévia
         </WiiText>
@@ -92,7 +92,7 @@ function FichaForm({ routines, existing }: { routines: Routine[]; existing?: Rou
         {existing && (
           <WiiButton label="Excluir ficha" icon="trash" accent="red" variant="outline" onPress={remove} />
         )}
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

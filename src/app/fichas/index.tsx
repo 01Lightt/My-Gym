@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { RoutineCard } from '@/components/RoutineCard';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { useRoutines } from '@/data/routines';
 import { spacing } from '@/theme';
@@ -14,7 +14,7 @@ export default function FichasScreen() {
 
   return (
     <ScreenLayout title="Fichas">
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScreenScrollView contentContainerStyle={styles.content}>
         {ready && routines.length === 0 && (
           <EmptyState
             icon="clipboard"
@@ -37,7 +37,7 @@ export default function FichasScreen() {
           accent="green"
           onPress={() => router.push('/fichas/form')}
         />
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

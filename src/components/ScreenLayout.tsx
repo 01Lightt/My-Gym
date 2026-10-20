@@ -1,12 +1,22 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  type ScrollViewProps,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WiiBackground } from '@/components/WiiBackground';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { colors, spacing } from '@/theme';
+
+/** Altura aproximada do botão Menu/Voltar com o respiro em volta. */
+const FOOTER_HEIGHT = 84;
 
 type Props = {
   title: string;
@@ -15,7 +25,27 @@ type Props = {
   children: ReactNode;
 };
 
-/** Layout padrão das telas internas: título no topo e botão em pílula embaixo, como nos canais do Wii. */
+/**
+ * Espaço que o botão flutuante ocupa embaixo da tela. Use para o conteúdo não ficar escondido
+ * atrás dele (ex.: algo posicionado no rodapé).
+ */
+export function useFooterSpace() {
+  const insets = useSafeAreaInsets();
+  return FOOTER_HEIGHT + insets.bottom;
+}
+
+/** ScrollView das telas internas: deixa espaço no fim para rolar o conteúdo acima do botão flutuante. */
+export function ScreenScrollView({ contentContainerStyle, ...rest }: ScrollViewProps) {
+  const footerSpace = useFooterSpace();
+  const ownPadding = StyleSheet.flatten(contentContainerStyle)?.paddingBottom;
+  const extra = typeof ownPadding === 'number' ? ownPadding : 0;
+  return <ScrollView contentContainerStyle={[contentContainerStyle, { paddingBottom: extra + footerSpace }]} {...rest} />;
+}
+
+/**
+ * Layout padrão das telas internas: título no topo e o botão Menu/Voltar em pílula
+ * flutuando por cima do conteúdo (sem faixa de fundo atrás), como nos canais do Wii.
+ */
 export function ScreenLayout({ title, back = 'menu', children }: Props) {
   const insets = useSafeAreaInsets();
 
@@ -40,7 +70,7 @@ export function ScreenLayout({ title, back = 'menu', children }: Props) {
         {children}
       </KeyboardAvoidingView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>
+      <View pointerEvents="box-none" style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>
         <WiiButton
           label={back === 'menu' ? 'Menu' : 'Voltar'}
           icon={back === 'menu' ? 'home' : 'arrow-back'}
@@ -64,5 +94,6 @@ const styles = StyleSheet.create({
   headerShine: { height: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)' },
   title: { color: colors.text, fontSize: 26 },
   content: { flex: 1 },
-  footer: { alignItems: 'center', paddingTop: spacing.sm },
+  // Flutua por cima do conteúdo, sem fundo
+  footer: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center' },
 });

@@ -11,9 +11,6 @@ import type { AccentName } from '@/theme';
  * Ícones disponíveis: https://icons.expo.fyi (família Ionicons)
  */
 
-/** Texto em relevo nos blocos vazios da grade. */
-export const EMPTY_SLOT_LABEL = 'Wii';
-
 /** Quantos blocos a grade do menu mostra no total (canais + vazios). Se houver mais canais, todos aparecem. */
 export const GRID_SLOTS = 6;
 
@@ -49,7 +46,7 @@ export const channels: Channel[] = [
   },
   {
     id: 'timer',
-    title: 'Descanso',
+    title: 'Timer',
     icon: 'timer',
     accent: 'red',
     route: '/timer',

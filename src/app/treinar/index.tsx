@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlossyBubble } from '@/components/GlossyBubble';
 import { RoutineCard } from '@/components/RoutineCard';
-import { ScreenLayout } from '@/components/ScreenLayout';
+import { ScreenLayout, ScreenScrollView } from '@/components/ScreenLayout';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { useRoutines, type Routine } from '@/data/routines';
@@ -28,7 +28,7 @@ export default function TreinarScreen() {
 
   return (
     <ScreenLayout title="Treinar">
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScreenScrollView contentContainerStyle={styles.content}>
         {workout ? (
           <ActiveWorkoutCard workout={workout} />
         ) : (
@@ -55,7 +55,7 @@ export default function TreinarScreen() {
             </>
           )
         )}
-      </ScrollView>
+      </ScreenScrollView>
     </ScreenLayout>
   );
 }

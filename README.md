@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/home.jpg" alt="Home screen: Wii-style channel grid with Treinar, Fichas, Evolução and Descanso, and the clock bar" width="300" />
+  <img src="docs/images/home.jpg" alt="Home screen: Wii-style channel grid with Treinar, Fichas, Evolução and Timer, and the clock bar" width="300" />
 </p>
 
 
@@ -21,6 +21,7 @@
 - Pick today's routine and start; every set comes pre-filled with the routine's weight and reps.
 - Edit weight (kg) and reps per set, tap ✓ to mark it done, add or remove sets on the fly.
 - A rest timer pops up automatically after each set (90 s by default, ±15 s), vibrating when it ends.
+  If the app is in the background, a notification tells you it's time for the next set.
 - Elapsed time and a progress bar for the session.
 - The workout in progress is saved, so closing the app doesn't lose it.
 - A Wii Sports–style **results screen**: duration, sets, reps, total volume and **new personal records**.
@@ -38,15 +39,18 @@
   *1 month / 3 months / all* filters, tap-to-read values and a table view.
 - Workout history for the period; long-press a workout to delete it.
 
-### Descanso — rest timer
+### Timer — rest timer
 - Type minutes and seconds; a large ring counts down smoothly.
 - Pause, resume and restart; vibrates and plays a chime at the end.
+- Sends a notification when time is up if the app is in the background or closed.
 - Keeps the screen awake while running and remembers the last duration.
 
 ### The Wii look
 - Neutral grey background with fine stripes, like the Wii Menu.
-- Home screen as a channel grid, with empty slots showing an embossed "Wii".
-- Bottom bar with the curved cyan line and a seven-segment clock.
+- Home screen as a channel grid: glossy color channels inside a beveled frame, and empty slots
+  with an embossed "Wii" mark drawn in SVG.
+- Bottom bar with the curved cyan line: the seven-segment clock sits above it and the date on
+  the darker bar below.
 - White buttons with cyan outlines, glossy color bubbles and bouncy press animations.
 
 ## Tech stack
@@ -59,7 +63,7 @@
 | Animation | React Native Reanimated |
 | Charts & drawings | react-native-svg (hand-rolled charts, clock digits and timer ring) |
 | Storage | AsyncStorage (all data stays on the device) |
-| Audio / screen | expo-audio, expo-keep-awake |
+| Audio, screen & alerts | expo-audio, expo-keep-awake, expo-notifications (local only) |
 | Font | M PLUS Rounded 1c |
 
 ## Getting started
@@ -131,7 +135,7 @@ scripts/
 | What | Where |
 |---|---|
 | Colors, fonts, corner radius, shadows | [`src/theme/index.ts`](src/theme/index.ts) |
-| Home channels, number of grid slots, empty-slot label | [`src/config/channels.ts`](src/config/channels.ts) |
+| Home channels and number of grid slots | [`src/config/channels.ts`](src/config/channels.ts) |
 | Rest time after a set and the ±step | [`src/config/workout.ts`](src/config/workout.ts) |
 | App icon and splash image | [`scripts/generate-icons.js`](scripts/generate-icons.js), then `node scripts/generate-icons.js` |
 | Timer chime | [`scripts/generate-plim.js`](scripts/generate-plim.js), then `node scripts/generate-plim.js` |
