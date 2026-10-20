@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.tileTop,
     boxShadow: shadows.tile,
   },
-  active: { backgroundColor: colors.primary, borderColor: colors.textOnColor },
+  // Selecionado no estilo Wii: fundo azul bem claro, contorno e brilho ciano
+  active: { backgroundColor: colors.primaryLight, borderColor: colors.primary, boxShadow: shadows.glow },
   label: { fontFamily: fonts.bold, fontSize: 15, color: colors.textMuted },
-  activeLabel: { color: colors.textOnColor },
+  activeLabel: { color: colors.text },
 });

@@ -11,14 +11,18 @@ type Props = {
   label: string;
   onPress: () => void;
   icon?: ComponentProps<typeof Ionicons>['name'];
+  /** Cor do ícone (e do texto, quando for vermelho/excluir). */
   accent?: AccentName;
-  /** solid = preenchido com a cor; outline = fundo branco com texto colorido. */
+  /** solid = ação principal (contorno ciano); outline = ação secundária (contorno cinza). */
   variant?: 'solid' | 'outline';
   disabled?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-/** Botão em pílula no estilo Wii. */
+/**
+ * Botão no estilo do Wii (como o botão "Menu do Wii" dos canais):
+ * branco, texto cinza e contorno azul-ciano. A cor da ação aparece só no ícone.
+ */
 export function WiiButton({
   label,
   onPress,
@@ -28,18 +32,18 @@ export function WiiButton({
   disabled,
   containerStyle,
 }: Props) {
-  const solid = variant === 'solid';
-  const gradient = solid ? colors.accent[accent] : ([colors.tileTop, colors.tileBottom] as const);
-  const textColor = solid ? colors.textOnColor : colors.accent[accent][1];
+  const primary = variant === 'solid';
+  const accentColor = colors.accent[accent][1];
+  const textColor = accent === 'red' ? colors.danger : colors.text;
 
   return (
     <BouncyPressable
       containerStyle={containerStyle}
-      style={[styles.button, solid ? styles.solid : styles.outline, disabled && styles.disabled]}
+      style={[styles.button, primary ? styles.primary : styles.secondary, disabled && styles.disabled]}
       onPress={onPress}
       disabled={disabled}>
-      <LinearGradient colors={gradient} style={styles.inner}>
-        {icon && <Ionicons name={icon} size={20} color={textColor} />}
+      <LinearGradient colors={[colors.tileTop, colors.tileBottom]} style={styles.inner}>
+        {icon && <Ionicons name={icon} size={21} color={accentColor} />}
         <WiiText style={[styles.label, { color: textColor }]}>{label}</WiiText>
       </LinearGradient>
     </BouncyPressable>
@@ -49,12 +53,11 @@ export function WiiButton({
 const styles = StyleSheet.create({
   button: {
     borderRadius: radius.pill,
-    borderWidth: 2,
-    boxShadow: shadows.button,
+    borderWidth: 2.5,
     overflow: 'hidden',
   },
-  solid: { borderColor: colors.textOnColor },
-  outline: { borderColor: colors.tileBorder, boxShadow: shadows.tile },
+  primary: { borderColor: colors.primary, boxShadow: shadows.glow },
+  secondary: { borderColor: colors.tileBorder, boxShadow: shadows.button },
   disabled: { opacity: 0.45 },
   inner: {
     flexDirection: 'row',

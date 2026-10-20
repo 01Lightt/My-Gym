@@ -7,12 +7,19 @@ import type { AccentName } from '@/theme';
 /**
  * BLOCOS DO MENU PRINCIPAL (estilo canais do Wii).
  * Para adicionar, remover ou reordenar um bloco, edite só esta lista.
+ * Os espaços que sobram na grade viram blocos vazios, como no Menu do Wii.
  * Ícones disponíveis: https://icons.expo.fyi (família Ionicons)
  */
+
+/** Texto em relevo nos blocos vazios da grade. */
+export const EMPTY_SLOT_LABEL = 'Wii';
+
+/** Quantos blocos a grade do menu mostra no total (canais + vazios). Se houver mais canais, todos aparecem. */
+export const GRID_SLOTS = 6;
+
 export type Channel = {
   id: string;
   title: string;
-  subtitle: string;
   icon: ComponentProps<typeof Ionicons>['name'];
   accent: AccentName;
   route: Href;
@@ -22,7 +29,6 @@ export const channels: Channel[] = [
   {
     id: 'treinar',
     title: 'Treinar',
-    subtitle: 'Registrar treino',
     icon: 'barbell',
     accent: 'blue',
     route: '/treinar',
@@ -30,7 +36,6 @@ export const channels: Channel[] = [
   {
     id: 'fichas',
     title: 'Fichas',
-    subtitle: 'Treino A, B, C...',
     icon: 'clipboard',
     accent: 'green',
     route: '/fichas',
@@ -38,7 +43,6 @@ export const channels: Channel[] = [
   {
     id: 'evolucao',
     title: 'Evolução',
-    subtitle: 'Gráficos',
     icon: 'stats-chart',
     accent: 'orange',
     route: '/evolucao',
@@ -46,7 +50,6 @@ export const channels: Channel[] = [
   {
     id: 'timer',
     title: 'Descanso',
-    subtitle: 'Cronômetro',
     icon: 'timer',
     accent: 'red',
     route: '/timer',

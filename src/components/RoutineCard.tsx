@@ -29,7 +29,7 @@ export function RoutineCard({ routine, onPress, action = 'open' }: Props) {
       </GlossyBubble>
 
       <View style={styles.info}>
-        <WiiText variant="title" style={styles.name} numberOfLines={1}>
+        <WiiText variant="title" style={styles.name} numberOfLines={2}>
           {name || `Treino ${label}`}
         </WiiText>
         <WiiText style={[styles.count, { color: colors.accent[accent][1] }]}>

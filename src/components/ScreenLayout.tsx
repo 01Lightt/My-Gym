@@ -32,6 +32,7 @@ export function ScreenLayout({ title, back = 'menu', children }: Props) {
           {title}
         </WiiText>
       </View>
+      <View style={styles.headerShine} />
 
       <KeyboardAvoidingView
         style={styles.content}
@@ -51,15 +52,17 @@ export function ScreenLayout({ title, back = 'menu', children }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // Faixa clara com a linha azul-ciano embaixo, como a barra do Menu do Wii
   header: {
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
-    borderBottomWidth: 2,
-    borderColor: colors.tileBorder,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderBottomWidth: 2.5,
+    borderColor: colors.barLine,
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
   },
-  title: { color: colors.primaryDark, fontSize: 28 },
+  headerShine: { height: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)' },
+  title: { color: colors.text, fontSize: 26 },
   content: { flex: 1 },
   footer: { alignItems: 'center', paddingTop: spacing.sm },
 });

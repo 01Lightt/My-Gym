@@ -1,23 +1,25 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Svg, { Defs, Pattern, Rect } from 'react-native-svg';
 
 import { colors } from '@/theme';
 
-const LINE_GAP = 6;
-const LINE_COUNT = 220;
+/** Distância entre as listras (px). No Wii elas são bem finas e próximas. */
+const STRIPE_PERIOD = 3;
 
-/** Fundo do menu do Wii: gradiente claro com listras horizontais finas. */
+/** Fundo do Menu do Wii: cinza neutro com listras horizontais de 1px. */
 export function WiiBackground({ children }: { children: ReactNode }) {
   return (
-    <LinearGradient
-      colors={[colors.backgroundTop, colors.backgroundBottom]}
-      style={styles.fill}>
-      <View pointerEvents="none" style={styles.lines}>
-        {Array.from({ length: LINE_COUNT }, (_, i) => (
-          <View key={i} style={[styles.line, { top: i * LINE_GAP }]} />
-        ))}
-      </View>
+    <LinearGradient colors={[colors.backgroundTop, colors.backgroundBottom]} style={styles.fill}>
+      <Svg pointerEvents="none" style={StyleSheet.absoluteFill} width="100%" height="100%">
+        <Defs>
+          <Pattern id="stripes" width={4} height={STRIPE_PERIOD} patternUnits="userSpaceOnUse">
+            <Rect x={0} y={0} width={4} height={1} fill={colors.backgroundLines} />
+          </Pattern>
+        </Defs>
+        <Rect x={0} y={0} width="100%" height="100%" fill="url(#stripes)" />
+      </Svg>
       {children}
     </LinearGradient>
   );
@@ -25,12 +27,4 @@ export function WiiBackground({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   fill: { flex: 1, overflow: 'hidden' },
-  lines: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, overflow: 'hidden' },
-  line: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: colors.backgroundLines,
-  },
 });

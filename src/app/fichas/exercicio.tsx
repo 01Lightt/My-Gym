@@ -101,6 +101,7 @@ function ExercicioForm({ routine, existing }: { routine?: Routine; existing?: Ro
 
 const styles = StyleSheet.create({
   content: { padding: spacing.md, gap: spacing.lg },
-  row: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.lg },
+  // Alinha pelo topo para os títulos "Séries" e "Repetições" ficarem na mesma altura
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg },
   flex: { flex: 1 },
 });

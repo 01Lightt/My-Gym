@@ -12,8 +12,9 @@ export function PopIn({ delay = 0, style, children }: Props) {
     Animated.spring(progress, {
       toValue: 1,
       delay,
-      speed: 8,
-      bounciness: 14,
+      // Quique rápido que assenta em ~1 s (antes ficava balançando por vários segundos)
+      speed: 16,
+      bounciness: 10,
       useNativeDriver: true,
     }).start();
   }, [progress, delay]);

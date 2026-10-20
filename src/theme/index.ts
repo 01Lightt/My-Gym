@@ -1,33 +1,40 @@
 /**
  * TEMA DO APP — mude aqui as cores, fontes e tamanhos e o app inteiro acompanha.
- * Inspirado no visual do Wii / Wii Sports: branco, cinza-claro, azul Wii e cantos bem arredondados.
+ * Baseado no Menu do Wii: fundo cinza neutro listrado, "chrome" branco/cinza,
+ * azul-ciano só em contornos e destaques, cor forte só dentro dos canais.
  */
 
 export const colors = {
-  // Fundo do menu (gradiente de cima para baixo)
-  backgroundTop: '#FFFFFF',
-  backgroundBottom: '#DDE6EE',
-  backgroundLines: 'rgba(160, 180, 195, 0.12)',
+  // Fundo (gradiente de cima para baixo + listras finas de 1px, como o Menu do Wii)
+  backgroundTop: '#F2F2F2',
+  backgroundBottom: '#E3E3E3',
+  backgroundLines: 'rgba(0, 0, 0, 0.035)',
 
-  // Azul característico do Wii
+  // Azul-ciano característico do Wii (contornos, linhas, seleção)
   primary: '#34BEED',
-  primaryDark: '#0A8FC6',
-  primaryLight: '#BDEBFB',
+  primaryDark: '#1A9BD7',
+  primaryLight: '#DDF4FC',
 
-  // Textos
-  text: '#4D5560',
-  textMuted: '#8C9AA5',
+  // Textos (cinza neutro, como no Wii)
+  text: '#4F4F4F',
+  textMuted: '#8C8C8C',
   textOnColor: '#FFFFFF',
 
-  // Blocos (canais)
+  // Cartões e campos
   tileTop: '#FFFFFF',
-  tileBottom: '#EEF2F5',
-  tileBorder: '#C9D3DB',
+  tileBottom: '#F0F0F0',
+  tileBorder: '#CFCFCF',
 
-  // Barra inferior
-  barTop: '#F6F8FA',
-  barBottom: '#D5DEE5',
-  barBorder: '#BCC7D0',
+  // Espaços vazios da grade do menu (blocos cinza com "Wii" em relevo)
+  emptySlot: ['#CDCDCE', '#BCBDBE'],
+  emptySlotBorder: '#DADADA',
+  emptySlotText: 'rgba(255, 255, 255, 0.5)',
+
+  // Barra inferior do menu
+  barTop: '#E2E2E5',
+  barBottom: '#CDCFD7',
+  barLine: '#34BEED',
+  clock: '#8E8F91',
 
   // Ações perigosas (excluir)
   danger: '#E04848',
@@ -35,11 +42,11 @@ export const colors = {
   // Gráficos: uma única cor para os dados (validada contra o fundo branco), grade discreta
   chart: {
     data: '#1A9BD7',
-    grid: '#E3E9EE',
-    empty: '#E6ECF1',
+    grid: '#E5E5E5',
+    empty: '#E6E6E6',
   },
 
-  // Cores de destaque (gradiente claro → escuro), usadas nos canais e nas fichas
+  // Cores de destaque (gradiente claro → escuro), usadas dentro dos canais, fichas e ícones
   accent: {
     blue: ['#5CD0F5', '#1A9BD7'],
     green: ['#9BE05A', '#4DAA1E'],
@@ -71,11 +78,15 @@ export const radius = {
   sm: 10,
   md: 18,
   lg: 26,
+  /** Canais do menu: cantos pouco arredondados, como no Wii. */
+  channel: 12,
   pill: 999,
 } as const;
 
 export const shadows = {
-  tile: '0px 4px 10px rgba(80, 110, 135, 0.18)',
-  button: '0px 3px 6px rgba(10, 100, 150, 0.30)',
-  bar: '0px -3px 12px rgba(80, 110, 135, 0.15)',
+  tile: '0px 3px 8px rgba(0, 0, 0, 0.12)',
+  button: '0px 2px 5px rgba(0, 0, 0, 0.18)',
+  channel: '0px 1px 3px rgba(0, 0, 0, 0.25)',
+  /** Brilho ciano em volta do que está ativo/selecionado. */
+  glow: '0px 0px 6px rgba(52, 190, 237, 0.55)',
 } as const;
