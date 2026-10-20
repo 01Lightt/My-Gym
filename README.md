@@ -13,8 +13,7 @@
   <img src="docs/images/home.jpg" alt="Home screen: Wii-style channel grid with Treinar, Fichas, Evolução and Descanso, and the clock bar" width="300" />
 </p>
 
-> The app's interface is in Brazilian Portuguese. The four main sections are **Treinar** (Workout),
-> **Fichas** (Routines), **Evolução** (Progress) and **Descanso** (Rest timer).
+
 
 ## Features
 
