@@ -22,7 +22,7 @@ export function SegmentedPills<T extends string>({ options, value, onChange, scr
       <BouncyPressable
         key={option.value}
         onPress={() => onChange(option.value)}
-        style={[styles.pill, active && styles.active]}
+        style={[styles.pill, !scrollable && styles.compact, active && styles.active]}
         containerStyle={!scrollable && styles.grow}>
         <WiiText style={[styles.label, active && styles.activeLabel]} numberOfLines={1}>
           {option.label}
@@ -54,6 +54,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.tileTop,
     boxShadow: shadows.tile,
   },
+  // Pílulas que dividem a largura: menos respiro nas laterais para caberem até 4 em celulares estreitos
+  compact: { paddingHorizontal: spacing.sm },
   // Selecionado no estilo Wii: fundo azul bem claro, contorno e brilho ciano
   active: { backgroundColor: colors.primaryLight, borderColor: colors.primary, boxShadow: shadows.glow },
   label: { fontFamily: fonts.bold, fontSize: 15, color: colors.textMuted },

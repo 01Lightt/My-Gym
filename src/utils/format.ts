@@ -15,6 +15,15 @@ export function parseReps(text: string): number | null {
   return match ? parseInt(match[0], 10) : null;
 }
 
+/** Converte o tempo digitado (em segundos) em número: "45" → 45; vazio vira null. */
+export const parseSeconds = parseReps;
+
+/** Tempo curto de exercício: 45 → "45 s", 90 → "1:30". */
+export function formatSeconds(seconds: number) {
+  const rounded = Math.round(seconds);
+  return rounded < 60 ? `${rounded} s` : formatDuration(rounded * 1000);
+}
+
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Duração em "mm:ss" ou "h:mm:ss". */

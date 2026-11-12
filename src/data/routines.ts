@@ -2,6 +2,12 @@ import { createPersistentStore } from '@/data/store';
 import type { AccentName } from '@/theme';
 import { createId } from '@/utils/id';
 
+/**
+ * Como o exercício é medido: "weight" = carga e repetições (supino, agachamento...);
+ * "time" = tempo por série, sem carga (prancha, isometria...).
+ */
+export type ExerciseMode = 'weight' | 'time';
+
 /** Um exercício dentro de uma ficha. */
 export type RoutineExercise = {
   id: string;
@@ -11,7 +17,14 @@ export type RoutineExercise = {
   reps: string;
   weightKg: number | null;
   notes: string;
+  /** Ausente nos exercícios criados antes desta opção existir: valem como "weight". */
+  mode?: ExerciseMode;
+  /** Tempo de cada série (segundos), usado no modo "time". */
+  durationSec?: number | null;
 };
+
+/** Modo do exercício, tratando os dados antigos (sem modo) como carga/repetições. */
+export const exerciseMode = (exercise: { mode?: ExerciseMode }): ExerciseMode => exercise.mode ?? 'weight';
 
 /** Uma ficha de treino (Treino A, B, C...). */
 export type Routine = {

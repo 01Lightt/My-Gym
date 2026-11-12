@@ -6,9 +6,10 @@ import { BouncyPressable } from '@/components/BouncyPressable';
 import { GlossyBubble } from '@/components/GlossyBubble';
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
+import { exerciseMode } from '@/data/routines';
 import type { WorkoutExercise, WorkoutSet } from '@/data/workouts';
 import { colors, fonts, radius, shadows, spacing, type AccentName } from '@/theme';
-import { formatWeight, parseReps, parseWeight } from '@/utils/format';
+import { formatSeconds, formatWeight, parseReps, parseSeconds, parseWeight } from '@/utils/format';
 
 type Props = {
   exercise: WorkoutExercise;
@@ -32,6 +33,12 @@ export function WorkoutExerciseCard({
 }: Props) {
   const doneCount = exercise.sets.filter((set) => set.done).length;
   const allDone = doneCount === exercise.sets.length;
+  const timed = exerciseMode(exercise) === 'time';
+  const target = timed
+    ? exercise.targetDurationSec != null
+      ? formatSeconds(exercise.targetDurationSec)
+      : '—'
+    : exercise.targetReps || '—';
 
   return (
     <View style={[styles.card, allDone && { borderColor: colors.accent[accent][1] }]}>
@@ -46,7 +53,7 @@ export function WorkoutExerciseCard({
         <View style={styles.titleBox}>
           <WiiText style={styles.name}>{exercise.name}</WiiText>
           <WiiText variant="label">
-            Meta: {exercise.targetSets} × {exercise.targetReps || '—'}
+            Meta: {exercise.targetSets} × {target}
           </WiiText>
         </View>
         <WiiText style={[styles.counter, { color: colors.accent[accent][1] }]}>
@@ -67,12 +74,20 @@ export function WorkoutExerciseCard({
         <WiiText variant="label" style={styles.colSet}>
           Série
         </WiiText>
-        <WiiText variant="label" style={styles.colInput}>
-          kg
-        </WiiText>
-        <WiiText variant="label" style={styles.colInput}>
-          reps
-        </WiiText>
+        {timed ? (
+          <WiiText variant="label" style={styles.colInput}>
+            tempo (seg)
+          </WiiText>
+        ) : (
+          <>
+            <WiiText variant="label" style={styles.colInput}>
+              kg
+            </WiiText>
+            <WiiText variant="label" style={styles.colInput}>
+              reps
+            </WiiText>
+          </>
+        )}
         <View style={styles.colCheck} />
       </View>
 
@@ -81,6 +96,7 @@ export function WorkoutExerciseCard({
           key={setIndex}
           index={setIndex}
           set={set}
+          timed={timed}
           accent={accent}
           onChange={(patch) => onChangeSet(setIndex, patch)}
           onToggle={() => onToggleSet(setIndex)}
@@ -113,43 +129,65 @@ export function WorkoutExerciseCard({
 type SetRowProps = {
   index: number;
   set: WorkoutSet;
+  /** Exercício medido por tempo: um campo de segundos no lugar de carga e repetições. */
+  timed: boolean;
   accent: AccentName;
   onChange: (patch: Partial<WorkoutSet>) => void;
   onToggle: () => void;
 };
 
-function SetRow({ index, set, accent, onChange, onToggle }: SetRowProps) {
+function SetRow({ index, set, timed, accent, onChange, onToggle }: SetRowProps) {
   // Texto local para permitir digitar valores intermediários como "22,"
   const [weight, setWeight] = useState(set.weightKg != null ? formatWeight(set.weightKg) : '');
   const [reps, setReps] = useState(set.reps != null ? String(set.reps) : '');
+  const [duration, setDuration] = useState(set.durationSec != null ? String(set.durationSec) : '');
 
   return (
     <View style={[styles.setRow, set.done && { backgroundColor: `${colors.accent[accent][0]}33` }]}>
       <WiiText style={[styles.colSet, styles.setNumber]}>{index + 1}</WiiText>
-      <TextInput
-        style={[styles.colInput, styles.input]}
-        value={weight}
-        onChangeText={(text) => {
-          setWeight(text);
-          onChange({ weightKg: parseWeight(text) });
-        }}
-        keyboardType="decimal-pad"
-        placeholder="—"
-        placeholderTextColor={colors.textMuted}
-        selectTextOnFocus
-      />
-      <TextInput
-        style={[styles.colInput, styles.input]}
-        value={reps}
-        onChangeText={(text) => {
-          setReps(text);
-          onChange({ reps: parseReps(text) });
-        }}
-        keyboardType="number-pad"
-        placeholder="—"
-        placeholderTextColor={colors.textMuted}
-        selectTextOnFocus
-      />
+      {timed ? (
+        <TextInput
+          style={[styles.colInput, styles.input]}
+          value={duration}
+          onChangeText={(text) => {
+            const digits = text.replace(/\D/g, '');
+            setDuration(digits);
+            onChange({ durationSec: parseSeconds(digits) });
+          }}
+          keyboardType="number-pad"
+          maxLength={4}
+          placeholder="—"
+          placeholderTextColor={colors.textMuted}
+          selectTextOnFocus
+        />
+      ) : (
+        <>
+          <TextInput
+            style={[styles.colInput, styles.input]}
+            value={weight}
+            onChangeText={(text) => {
+              setWeight(text);
+              onChange({ weightKg: parseWeight(text) });
+            }}
+            keyboardType="decimal-pad"
+            placeholder="—"
+            placeholderTextColor={colors.textMuted}
+            selectTextOnFocus
+          />
+          <TextInput
+            style={[styles.colInput, styles.input]}
+            value={reps}
+            onChangeText={(text) => {
+              setReps(text);
+              onChange({ reps: parseReps(text) });
+            }}
+            keyboardType="number-pad"
+            placeholder="—"
+            placeholderTextColor={colors.textMuted}
+            selectTextOnFocus
+          />
+        </>
+      )}
       <View style={styles.colCheck}>
         <BouncyPressable onPress={onToggle} hitSlop={6}>
           {set.done ? (

@@ -5,9 +5,9 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { BouncyPressable } from '@/components/BouncyPressable';
 import { GlossyBubble } from '@/components/GlossyBubble';
 import { WiiText } from '@/components/WiiText';
-import type { RoutineExercise } from '@/data/routines';
+import { exerciseMode, type RoutineExercise } from '@/data/routines';
 import { colors, fonts, radius, shadows, spacing, type AccentName } from '@/theme';
-import { formatWeight } from '@/utils/format';
+import { formatSeconds, formatWeight } from '@/utils/format';
 
 type Props = {
   exercise: RoutineExercise;
@@ -32,9 +32,19 @@ export function ExerciseItem({ exercise, index, accent, onPress, onMoveUp, onMov
         <WiiText style={styles.name}>{exercise.name}</WiiText>
         <View style={styles.chips}>
           <Chip icon="layers" text={`${exercise.sets} séries`} color={accentColor} />
-          {exercise.reps ? <Chip icon="repeat" text={`${exercise.reps} reps`} color={accentColor} /> : null}
-          {exercise.weightKg != null && (
-            <Chip icon="barbell" text={`${formatWeight(exercise.weightKg)} kg`} color={accentColor} />
+          {exerciseMode(exercise) === 'time' ? (
+            <Chip
+              icon="timer"
+              text={exercise.durationSec != null ? formatSeconds(exercise.durationSec) : 'por tempo'}
+              color={accentColor}
+            />
+          ) : (
+            <>
+              {exercise.reps ? <Chip icon="repeat" text={`${exercise.reps} reps`} color={accentColor} /> : null}
+              {exercise.weightKg != null && (
+                <Chip icon="barbell" text={`${formatWeight(exercise.weightKg)} kg`} color={accentColor} />
+              )}
+            </>
           )}
         </View>
         {exercise.notes ? (

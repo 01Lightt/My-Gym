@@ -63,6 +63,7 @@ export default function TreinarScreen() {
 function ActiveWorkoutCard({ workout }: { workout: Workout }) {
   const now = useNow(1000);
   const { done, total } = countSets(workout);
+  const restLeftMs = workout.rest ? workout.rest.endsAt - now : 0;
 
   const discard = () =>
     confirmAction(
@@ -86,6 +87,9 @@ function ActiveWorkoutCard({ workout }: { workout: Workout }) {
           <WiiText style={[styles.meta, { color: colors.accent[workout.accent][1] }]}>
             {formatDuration(now - workout.startedAt)} · {done}/{total} séries
           </WiiText>
+          {restLeftMs > 0 && (
+            <WiiText variant="label">Descanso: {formatDuration(restLeftMs + 999)} restantes</WiiText>
+          )}
         </View>
       </View>
       <WiiButton label="Continuar treino" icon="play" accent="green" onPress={() => router.push('/treinar/sessao')} />

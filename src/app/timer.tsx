@@ -12,7 +12,7 @@ import { setLastRestSeconds, useLastRestSeconds } from '@/data/restTimer';
 import { useNow } from '@/hooks/useNow';
 import { colors, fonts, radius, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
-import { useTimerNotification } from '@/utils/notifications';
+import { useTimerNotification, useTimerScreenOpen } from '@/utils/notifications';
 
 const PLIM = require('@/assets/sounds/plim.wav');
 
@@ -56,8 +56,11 @@ function RestTimer({ initialSeconds }: { initialSeconds: number }) {
     status === 'running' ? Math.max(0, endsAt - now) : status === 'paused' ? pausedRemaining : totalMs;
   const finished = status === 'running' && remaining === 0;
 
-  // Avisa no celular quando o tempo acabar, se o app estiver em segundo plano
+  // Avisa no celular quando o tempo acabar, se o app estiver em segundo plano.
+  // Com esta tela aberta o próprio app vibra e toca o "plim", então o aviso do sistema não aparece.
+  useTimerScreenOpen('timer');
   useTimerNotification(
+    'timer',
     status === 'running' ? endsAt : null,
     'Tempo esgotado!',
     `Seu timer de ${formatDuration(totalMs)} terminou.`,

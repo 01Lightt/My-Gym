@@ -8,13 +8,16 @@ import { ScreenLayout, ScreenScrollView, useFooterSpace } from '@/components/Scr
 import { WiiButton } from '@/components/WiiButton';
 import { WiiText } from '@/components/WiiText';
 import { WorkoutExerciseCard } from '@/components/WorkoutExerciseCard';
-import { REST_SECONDS } from '@/config/workout';
+import { REST_DONE_MESSAGE_MS, REST_SECONDS } from '@/config/workout';
 import { countSets } from '@/data/stats';
 import {
   addSet,
+  adjustRest,
+  clearRest,
   discardWorkout,
   finishWorkout,
   removeSet,
+  startRest,
   updateSet,
   useActiveWorkout,
 } from '@/data/workouts';
@@ -22,20 +25,22 @@ import { useNow } from '@/hooks/useNow';
 import { colors, fonts, radius, spacing } from '@/theme';
 import { confirmAction } from '@/utils/confirm';
 import { formatDuration } from '@/utils/format';
-import { useTimerNotification } from '@/utils/notifications';
-
-type Rest = { endsAt: number; totalSeconds: number };
-
-const startRest = (): Rest => ({ endsAt: Date.now() + REST_SECONDS * 1000, totalSeconds: REST_SECONDS });
+import { useTimerScreenOpen } from '@/utils/notifications';
 
 /** Treino em andamento: marcar séries, ajustar carga/reps e descansar entre as séries. */
 export default function SessaoScreen() {
   const { workout, ready } = useActiveWorkout();
-  const [rest, setRest] = useState<Rest | null>(null);
   const now = useNow(1000);
   const footerSpace = useFooterSpace();
-  // Avisa no celular quando o descanso acabar, se o app estiver em segundo plano
-  useTimerNotification(rest?.endsAt ?? null, 'Hora da próxima série!', 'Seu descanso acabou.');
+  const [openedAt] = useState(() => Date.now());
+  // Esta tela já vibra no fim do descanso: com ela aberta, o aviso do sistema não aparece por cima
+  useTimerScreenOpen('rest');
+
+  // O descanso fica salvo no treino: sair para o menu e voltar não perde o tempo.
+  // O aviso de fim do descanso é agendado na raiz do app (RestNotification).
+  // Um descanso que já tinha acabado antes de abrir a tela não reaparece (nem vibra de novo).
+  const savedRest = workout?.rest ?? null;
+  const rest = savedRest && savedRest.endsAt + REST_DONE_MESSAGE_MS > openedAt ? savedRest : null;
 
   if (!workout) {
     return (
@@ -60,16 +65,8 @@ export default function SessaoScreen() {
   const toggleSet = (exerciseIndex: number, setIndex: number) => {
     const wasDone = workout.exercises[exerciseIndex].sets[setIndex].done;
     updateSet(exerciseIndex, setIndex, { done: !wasDone });
-    if (!wasDone) setRest(startRest());
+    if (!wasDone) startRest(REST_SECONDS);
   };
-
-  const adjustRest = (deltaSeconds: number) =>
-    setRest((r) =>
-      r && {
-        endsAt: r.endsAt + deltaSeconds * 1000,
-        totalSeconds: Math.max(1, r.totalSeconds + deltaSeconds),
-      },
-    );
 
   const finish = () => {
     const message =
@@ -143,7 +140,7 @@ export default function SessaoScreen() {
             totalSeconds={rest.totalSeconds}
             accent={accent}
             onAdjust={adjustRest}
-            onClose={() => setRest(null)}
+            onClose={clearRest}
           />
         </View>
       )}

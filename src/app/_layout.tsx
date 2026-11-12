@@ -9,6 +9,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { RestNotification } from '@/components/RestNotification';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -31,6 +33,7 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="dark" />
+      <RestNotification />
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
     </>
   );

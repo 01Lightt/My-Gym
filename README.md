@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/images/icon.png" alt="My Gym icon" width="120" />
+  <img src="assets/images/icon.png" alt="Mii Gym icon" width="120" />
 </p>
 
-<h1 align="center">My Gym</h1>
+<h1 align="center">Mii Gym</h1>
 
 <p align="center">
   A workout tracker for Android with a look inspired by the Nintendo Wii Menu.<br />

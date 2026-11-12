@@ -12,7 +12,7 @@ import { WiiText } from '@/components/WiiText';
 import { findRecords, summarizeWorkout } from '@/data/stats';
 import { useWorkoutHistory } from '@/data/workouts';
 import { colors, fonts, radius, shadows, spacing } from '@/theme';
-import { formatDuration, formatNumber, formatWeight } from '@/utils/format';
+import { formatDuration, formatNumber, formatSeconds, formatWeight } from '@/utils/format';
 
 const STAGGER_MS = 180;
 
@@ -78,13 +78,17 @@ export default function ResultadoScreen() {
                 </WiiText>
                 <Ionicons name="star" size={24} color={colors.accent.orange[1]} />
               </View>
-              {records.map((record) => (
-                <View key={record.name} style={styles.recordRow}>
-                  <WiiText style={styles.recordName}>{record.name}</WiiText>
-                  <WiiText style={styles.recordValue}>{formatWeight(record.weightKg)} kg</WiiText>
-                  <WiiText variant="label">antes {formatWeight(record.previousKg)} kg</WiiText>
-                </View>
-              ))}
+              {records.map((record) => {
+                const format = (value: number) =>
+                  record.mode === 'time' ? formatSeconds(value) : `${formatWeight(value)} kg`;
+                return (
+                  <View key={record.name} style={styles.recordRow}>
+                    <WiiText style={styles.recordName}>{record.name}</WiiText>
+                    <WiiText style={styles.recordValue}>{format(record.value)}</WiiText>
+                    <WiiText variant="label">antes {format(record.previous)}</WiiText>
+                  </View>
+                );
+              })}
             </View>
           </PopIn>
         )}

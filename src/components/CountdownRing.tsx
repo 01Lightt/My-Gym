@@ -32,9 +32,9 @@ export function CountdownRing({ progress, countdown, size, color, strokeWidth = 
   const fraction = useCountdownProgress(progress, countdown);
 
   const animatedProps = useAnimatedProps(() => ({
-    strokeDashoffset: circumference * (1 - fraction.value),
+    strokeDashoffset: circumference * (1 - fraction.get()),
     // Com a ponta arredondada, um anel "vazio" ainda mostraria um pontinho
-    strokeOpacity: fraction.value > 0.001 ? 1 : 0,
+    strokeOpacity: fraction.get() > 0.001 ? 1 : 0,
   }));
 
   return (

@@ -1,4 +1,4 @@
-import type { Routine } from '@/data/routines';
+import { exerciseMode, type ExerciseMode, type Routine } from '@/data/routines';
 import { createPersistentStore } from '@/data/store';
 import type { AccentName } from '@/theme';
 import { parseReps } from '@/utils/format';
@@ -8,6 +8,8 @@ import { createId } from '@/utils/id';
 export type WorkoutSet = {
   weightKg: number | null;
   reps: number | null;
+  /** Tempo da série (segundos), nos exercícios medidos por tempo. */
+  durationSec?: number | null;
   done: boolean;
 };
 
@@ -19,6 +21,18 @@ export type WorkoutExercise = {
   targetReps: string;
   notes: string;
   sets: WorkoutSet[];
+  /** Ausente nos treinos salvos antes desta opção existir: valem como "weight". */
+  mode?: ExerciseMode;
+  /** Tempo por série pedido na ficha (segundos), no modo "time". */
+  targetDurationSec?: number | null;
+};
+
+/** Descanso entre séries em andamento. */
+export type Rest = {
+  /** Momento (ms) em que o descanso termina. */
+  endsAt: number;
+  /** Duração total (s), para a barra de progresso. */
+  totalSeconds: number;
 };
 
 /** Um treino (em andamento ou finalizado). */
@@ -31,6 +45,11 @@ export type Workout = {
   startedAt: number;
   finishedAt: number | null;
   exercises: WorkoutExercise[];
+  /**
+   * Descanso em andamento. Fica salvo junto com o treino para não sumir ao sair da tela
+   * (ir ao menu, abrir outra tela ou fechar o app no meio do descanso).
+   */
+  rest?: Rest | null;
 };
 
 /** Treino em andamento — fica salvo para não se perder se o app fechar no meio. */
@@ -58,19 +77,57 @@ export function startWorkout(routine: Routine) {
     accent: routine.accent,
     startedAt: Date.now(),
     finishedAt: null,
-    exercises: routine.exercises.map((exercise) => ({
-      id: exercise.id,
-      name: exercise.name,
-      targetSets: exercise.sets,
-      targetReps: exercise.reps,
-      notes: exercise.notes,
-      sets: Array.from({ length: exercise.sets }, () => ({
-        weightKg: exercise.weightKg,
-        reps: parseReps(exercise.reps),
-        done: false,
-      })),
-    })),
+    exercises: routine.exercises.map((exercise) => {
+      const mode = exerciseMode(exercise);
+      const timed = mode === 'time';
+      return {
+        id: exercise.id,
+        name: exercise.name,
+        targetSets: exercise.sets,
+        targetReps: timed ? '' : exercise.reps,
+        notes: exercise.notes,
+        mode,
+        targetDurationSec: timed ? (exercise.durationSec ?? null) : null,
+        sets: Array.from({ length: exercise.sets }, () => ({
+          weightKg: timed ? null : exercise.weightKg,
+          reps: timed ? null : parseReps(exercise.reps),
+          durationSec: timed ? (exercise.durationSec ?? null) : null,
+          done: false,
+        })),
+      };
+    }),
+    rest: null,
   }));
+}
+
+/** Começa (ou recomeça) o descanso entre séries. */
+export function startRest(seconds: number) {
+  activeStore.update(
+    (workout) => workout && { ...workout, rest: { endsAt: Date.now() + seconds * 1000, totalSeconds: seconds } },
+  );
+}
+
+/**
+ * Soma ou tira segundos do descanso em andamento (botões −15 / +15).
+ * Tirar mais do que falta termina o descanso agora (nunca deixa o fim no passado).
+ */
+export function adjustRest(deltaSeconds: number) {
+  activeStore.update(
+    (workout) =>
+      workout?.rest
+        ? {
+            ...workout,
+            rest: {
+              endsAt: Math.max(Date.now(), workout.rest.endsAt + deltaSeconds * 1000),
+              totalSeconds: Math.max(1, workout.rest.totalSeconds + deltaSeconds),
+            },
+          }
+        : workout,
+  );
+}
+
+export function clearRest() {
+  activeStore.update((workout) => (workout?.rest ? { ...workout, rest: null } : workout));
 }
 
 function updateSets(exerciseIndex: number, updater: (sets: WorkoutSet[]) => WorkoutSet[]) {
@@ -93,7 +150,15 @@ export function updateSet(exerciseIndex: number, setIndex: number, patch: Partia
 export function addSet(exerciseIndex: number) {
   updateSets(exerciseIndex, (sets) => {
     const last = sets[sets.length - 1];
-    return [...sets, { weightKg: last?.weightKg ?? null, reps: last?.reps ?? null, done: false }];
+    return [
+      ...sets,
+      {
+        weightKg: last?.weightKg ?? null,
+        reps: last?.reps ?? null,
+        durationSec: last?.durationSec ?? null,
+        done: false,
+      },
+    ];
   });
 }
 
@@ -106,7 +171,7 @@ export function removeSet(exerciseIndex: number) {
 export function finishWorkout() {
   const workout = activeStore.getState();
   if (!workout) return null;
-  historyStore.update((history) => [...history, { ...workout, finishedAt: Date.now() }]);
+  historyStore.update((history) => [...history, { ...workout, finishedAt: Date.now(), rest: null }]);
   activeStore.update(() => null);
   return workout.id;
 }

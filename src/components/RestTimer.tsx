@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useRef } from 'react';
 import { StyleSheet, Vibration, View } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { BouncyPressable } from '@/components/BouncyPressable';
 import { GlossyBubble } from '@/components/GlossyBubble';
@@ -28,9 +28,16 @@ export function RestTimer({ endsAt, totalSeconds, accent, onAdjust, onClose }: P
   const remainingMs = Math.max(0, endsAt - now);
   const finished = remainingMs === 0;
 
-  // A barra esvazia de forma contínua (Reanimated); só reinicia ao ajustar ±15 s
+  // A barra esvazia de forma contínua (Reanimated); só reinicia ao ajustar ±15 s.
+  // Ela desliza para a esquerda (translateX) em vez de mudar a largura: a largura é uma
+  // propriedade de layout e, no Android, as re-renderizações do cartão (4×/s, por causa do
+  // relógio) a devolviam ao valor inicial — a barra ficava parada. Um transform é aplicado
+  // direto na tela, como o anel do Timer.
   const fraction = useCountdownProgress(0, { endsAt, totalMs: totalSeconds * 1000 });
-  const fillStyle = useAnimatedStyle(() => ({ width: `${fraction.value * 100}%` }));
+  const trackWidth = useSharedValue(0);
+  const fillStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: (fraction.get() - 1) * trackWidth.get() }],
+  }));
 
   // Guarda o onClose mais recente sem reiniciar o efeito a cada render
   const onCloseRef = useRef(onClose);
@@ -58,7 +65,7 @@ export function RestTimer({ endsAt, totalSeconds, accent, onAdjust, onClose }: P
         <WiiText style={[styles.time, { color: accentColor }]}>
           {finished ? 'Próxima série!' : formatDuration(remainingMs + 999)}
         </WiiText>
-        <View style={styles.track}>
+        <View style={styles.track} onLayout={(e) => trackWidth.set(e.nativeEvent.layout.width)}>
           <Animated.View style={[styles.fill, { backgroundColor: accentColor }, fillStyle]} />
         </View>
       </View>
@@ -104,7 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.tileBottom,
     overflow: 'hidden',
   },
-  fill: { height: '100%', borderRadius: radius.pill },
+  fill: { width: '100%', height: '100%', borderRadius: radius.pill },
   buttons: { gap: spacing.xs },
   small: {
     paddingHorizontal: spacing.sm + 2,

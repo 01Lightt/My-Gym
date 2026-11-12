@@ -14,14 +14,15 @@ export function useCountdownProgress(staticProgress: number, countdown?: Countdo
   const endsAt = countdown?.endsAt;
   const totalMs = countdown?.totalMs;
 
+  // get()/set() em vez de .value: é a forma compatível com o React Compiler (ligado neste app)
   useEffect(() => {
     cancelAnimation(fraction);
     if (endsAt != null && totalMs) {
       const remaining = Math.max(0, endsAt - Date.now());
-      fraction.value = Math.min(1, remaining / totalMs);
-      fraction.value = withTiming(0, { duration: remaining, easing: Easing.linear });
+      fraction.set(Math.min(1, remaining / totalMs));
+      fraction.set(withTiming(0, { duration: remaining, easing: Easing.linear }));
     } else {
-      fraction.value = Math.min(1, Math.max(0, staticProgress));
+      fraction.set(Math.min(1, Math.max(0, staticProgress)));
     }
   }, [fraction, staticProgress, endsAt, totalMs]);
 
