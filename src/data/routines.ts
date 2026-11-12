@@ -46,6 +46,14 @@ export function useRoutines() {
   return { routines: state, ready };
 }
 
+/** Todas as fichas salvas agora (usado pelo backup). */
+export const getRoutines = () => store.getState();
+
+/** Troca todas as fichas de uma vez (usado ao importar um backup). */
+export function replaceRoutines(routines: Routine[]) {
+  store.update(() => routines);
+}
+
 export function useRoutine(id: string | undefined) {
   const { routines, ready } = useRoutines();
   return { routine: routines.find((r) => r.id === id), ready };

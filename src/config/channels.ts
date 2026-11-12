@@ -51,4 +51,12 @@ export const channels: Channel[] = [
     accent: 'red',
     route: '/timer',
   },
+  {
+    // Trocar de celular (exportar/importar todos os dados) e exportar a lista de exercícios em planilha
+    id: 'backup',
+    title: 'Backup',
+    icon: 'cloud-upload',
+    accent: 'purple',
+    route: '/backup',
+  },
 ];

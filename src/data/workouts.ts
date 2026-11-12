@@ -67,6 +67,19 @@ export function useWorkoutHistory() {
   return { workouts: state, ready };
 }
 
+/** Treinos finalizados e treino em andamento salvos agora (usado pelo backup). */
+export const getWorkoutHistory = () => historyStore.getState();
+export const getActiveWorkout = () => activeStore.getState();
+
+/**
+ * Troca o histórico e o treino em andamento de uma vez (usado ao importar um backup).
+ * O descanso do treino em andamento não vem junto: ele já teria acabado há muito tempo.
+ */
+export function replaceWorkouts(history: Workout[], active: Workout | null) {
+  historyStore.update(() => history);
+  activeStore.update(() => active && { ...active, rest: null });
+}
+
 /** Começa um treino a partir de uma ficha, com carga e repetições pré-preenchidas pela ficha. */
 export function startWorkout(routine: Routine) {
   activeStore.update(() => ({

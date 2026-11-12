@@ -8,6 +8,9 @@ export function useLastRestSeconds() {
   return { seconds: state, ready };
 }
 
+/** Último tempo do Timer salvo agora (usado pelo backup). */
+export const getLastRestSeconds = () => store.getState();
+
 export function setLastRestSeconds(seconds: number) {
   store.update(() => seconds);
 }
