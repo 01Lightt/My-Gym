@@ -59,6 +59,12 @@ export function estimateOneRepMax(weightKg: number, reps: number) {
   return reps <= 1 ? weightKg : weightKg * (1 + reps / 30);
 }
 
+/**
+ * Métricas do gráfico de evolução, sempre por treino e só com séries feitas:
+ * - maxWeight: maior carga numa série;      - volume: soma de carga × reps;
+ * - oneRepMax: maior 1RM estimado (Epley);  - reps: total de repetições (útil sem carga, ex.: barra fixa);
+ * - maxTime: maior tempo numa série;        - totalTime: soma dos tempos (exercícios por tempo).
+ */
 export type Metric = 'maxWeight' | 'volume' | 'oneRepMax' | 'reps' | 'maxTime' | 'totalTime';
 
 /** Métricas que fazem sentido em cada tipo de exercício, na ordem em que aparecem. */

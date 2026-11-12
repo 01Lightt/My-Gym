@@ -39,8 +39,11 @@ const PERIODS: { value: Period; label: string; days: number | null }[] = [
   { value: 'all', label: 'Tudo', days: null },
 ];
 
+/** Como cada métrica aparece na tela. Quais métricas cada exercício oferece vem de METRICS_BY_MODE (stats.ts). */
 type MetricInfo = {
+  /** Texto curto da pílula de escolha. */
   label: string;
+  /** Título do gráfico. */
   title: string;
   /** Como mostrar o valor (com a unidade). */
   format: (value: number) => string;
@@ -48,8 +51,11 @@ type MetricInfo = {
   zeroBaseline: boolean;
 };
 
+/** Carga com uma casa decimal (o 1RM estimado dá valores como 52,333...). */
 const kg = (value: number) => `${formatWeight(Math.round(value * 10) / 10)} kg`;
 
+// Exercícios com carga: Carga, Volume, 1RM e Reps (esta última serve para os sem carga, como barra fixa).
+// Exercícios por tempo (prancha): Maior tempo e Tempo total.
 const METRICS: Record<Metric, MetricInfo> = {
   maxWeight: { label: 'Carga', title: 'Carga máxima', format: kg, zeroBaseline: false },
   volume: { label: 'Volume', title: 'Volume (kg × reps)', format: (v) => `${formatNumber(v)} kg`, zeroBaseline: true },
@@ -107,6 +113,8 @@ export default function EvolucaoScreen() {
   const modeMetrics = selected ? METRICS_BY_MODE[selected.mode] : [];
   const withData = modeMetrics.filter((m) => exerciseSeries(inPeriod, selected!.key, m).length > 0);
   const metricChoices = withData.length > 0 ? withData : modeMetrics;
+  // A métrica escolhida fica guardada ao trocar de exercício; se o novo exercício não a tem
+  // (ex.: "Carga" e depois a prancha), usa a primeira disponível sem perder a escolha anterior.
   const activeMetric = metricChoices.includes(metric) ? metric : metricChoices[0];
   const series = selected && activeMetric ? exerciseSeries(inPeriod, selected.key, activeMetric) : [];
   const history = [...inPeriod].sort((a, b) => b.startedAt - a.startedAt);
@@ -164,6 +172,7 @@ export default function EvolucaoScreen() {
               onChange={setExerciseKey}
               scrollable
             />
+            {/* Com uma métrica só (ex.: barra fixa, só repetições) as pílulas não aparecem: o título do gráfico já diz qual é */}
             {metricChoices.length > 1 && (
               <SegmentedPills
                 options={metricChoices.map((m) => ({ value: m, label: METRICS[m].label }))}

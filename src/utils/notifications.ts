@@ -5,6 +5,16 @@ import { colors } from '@/theme';
 
 type NotificationsModule = typeof import('expo-notifications');
 
+/*
+ * Avisos de fim de tempo (descanso entre séries e Timer) no horário exato.
+ *
+ * No Android 12+ o sistema só dispara um alarme na hora certa se o app tiver permissão de
+ * "alarme exato"; sem ela o expo-notifications usa um alarme inexato, que o sistema pode
+ * atrasar alguns segundos (ou mais). O Android 14 deixou de conceder SCHEDULE_EXACT_ALARM na
+ * instalação, por isso o app.json declara também USE_EXACT_ALARM, que é concedida sozinha.
+ * (Se um dia o app for para a Play Store, ela só aceita USE_EXACT_ALARM em apps de alarme/timer.)
+ */
+
 /** Canal do Android usado pelos avisos de fim de tempo (descanso entre séries e Timer). */
 const CHANNEL_ID = 'timer';
 

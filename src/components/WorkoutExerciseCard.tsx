@@ -33,7 +33,9 @@ export function WorkoutExerciseCard({
 }: Props) {
   const doneCount = exercise.sets.filter((set) => set.done).length;
   const allDone = doneCount === exercise.sets.length;
+  // Exercício por tempo (prancha): cada série tem um campo de segundos no lugar de kg e reps
   const timed = exerciseMode(exercise) === 'time';
+  // "Meta: 3 × 45 s" para tempo, "Meta: 3 × 10-12" para repetições
   const target = timed
     ? exercise.targetDurationSec != null
       ? formatSeconds(exercise.targetDurationSec)
@@ -150,6 +152,7 @@ function SetRow({ index, set, timed, accent, onChange, onToggle }: SetRowProps) 
           style={[styles.colInput, styles.input]}
           value={duration}
           onChangeText={(text) => {
+            // Só números (segundos): o teclado numérico não tem ":" no Android
             const digits = text.replace(/\D/g, '');
             setDuration(digits);
             onChange({ durationSec: parseSeconds(digits) });

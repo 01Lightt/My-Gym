@@ -21,6 +21,10 @@ import { fonts, spacing } from '@/theme';
 import { confirmAction } from '@/utils/confirm';
 import { formatWeight, parseSeconds, parseWeight } from '@/utils/format';
 
+/**
+ * Opções de "Medir por". "Tempo" é para exercícios sem carga medidos em segundos (prancha, isometria):
+ * a ficha pede o tempo por série no lugar de repetições e carga.
+ */
 const MODES: { value: ExerciseMode; label: string }[] = [
   { value: 'weight', label: 'Peso e reps' },
   { value: 'time', label: 'Tempo' },
@@ -47,6 +51,7 @@ function ExercicioForm({ routine, existing }: { routine?: Routine; existing?: Ro
     existing && exerciseMode(existing) === 'weight' ? existing.reps : '12',
   );
   const [weight, setWeight] = useState(existing?.weightKg != null ? formatWeight(existing.weightKg) : '');
+  // Tempo por série em segundos (modo "Tempo"); começa em 30 s ao trocar um exercício para tempo
   const [duration, setDuration] = useState(existing?.durationSec != null ? String(existing.durationSec) : '30');
   const [notes, setNotes] = useState(existing?.notes ?? '');
 
@@ -103,6 +108,7 @@ function ExercicioForm({ routine, existing }: { routine?: Routine; existing?: Ro
               <WiiInput
                 label="Tempo (seg)"
                 value={duration}
+                // Só números: o teclado numérico do Android não tem ":" (por isso o tempo é em segundos)
                 onChangeText={(text) => setDuration(text.replace(/\D/g, ''))}
                 placeholder="Ex.: 45"
                 keyboardType="number-pad"

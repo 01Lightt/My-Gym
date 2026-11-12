@@ -126,6 +126,7 @@ export function adjustRest(deltaSeconds: number) {
   );
 }
 
+/** Encerra o descanso (botão ×, fim do aviso "Próxima série!"); o aviso agendado é cancelado junto. */
 export function clearRest() {
   activeStore.update((workout) => (workout?.rest ? { ...workout, rest: null } : workout));
 }

@@ -18,10 +18,13 @@
 ## Features
 
 ### Treinar — log a workout
-- Pick today's routine and start; every set comes pre-filled with the routine's weight and reps.
-- Edit weight (kg) and reps per set, tap ✓ to mark it done, add or remove sets on the fly.
+- Pick today's routine and start; every set comes pre-filled with the routine's weight and reps
+  (or the time per set, for timed exercises such as a plank).
+- Edit weight (kg) and reps — or seconds — per set, tap ✓ to mark it done, add or remove sets on the fly.
 - A rest timer pops up automatically after each set (90 s by default, ±15 s), vibrating when it ends.
-  If the app is in the background, a notification tells you it's time for the next set.
+  The rest keeps running if you go to the menu or another screen (the Treinar screen shows the time
+  left), and a notification at the exact end time tells you it's time for the next set — when the
+  app is in the background, closed, or open on another screen.
 - Elapsed time and a progress bar for the session.
 - The workout in progress is saved, so closing the app doesn't lose it.
 - A Wii Sports–style **results screen**: duration, sets, reps, total volume and **new personal records**.
@@ -29,14 +32,18 @@
 ### Fichas — routines
 - Routines such as *Treino A, B, C*, each with a letter, a name and a color.
 - Exercises with sets, reps (e.g. `10` or `8-10`), suggested weight and notes.
+- Each exercise is measured by **weight and reps** or by **time** (seconds per set, no weight),
+  for exercises like a plank.
 - Reorder exercises with up/down arrows; deleting asks for confirmation.
 
 ### Evolução — progress
 - Workouts this week and this month.
 - 12-week frequency calendar.
-- Personal records (heaviest weight per exercise).
-- Per-exercise line chart for **max weight**, **volume** or **estimated 1RM** (Epley), with
-  *1 month / 3 months / all* filters, tap-to-read values and a table view.
+- Personal records (heaviest weight per exercise, or longest set for timed exercises).
+- Per-exercise line chart for **max weight**, **volume**, **estimated 1RM** (Epley) or **reps**;
+  timed exercises show the **longest set** and **total time**. Only the metrics with data are
+  offered, so bodyweight exercises (e.g. pull-ups) show their reps. *1 month / 3 months / all*
+  filters, tap-to-read values and a table view.
 - Workout history for the period; long-press a workout to delete it.
 
 ### Timer — rest timer
@@ -63,7 +70,7 @@
 | Animation | React Native Reanimated |
 | Charts & drawings | react-native-svg (hand-rolled charts, clock digits and timer ring) |
 | Storage | AsyncStorage (all data stays on the device) |
-| Audio, screen & alerts | expo-audio, expo-keep-awake, expo-notifications (local only) |
+| Audio, screen & alerts | expo-audio, expo-keep-awake, expo-notifications (local only, exact alarms on Android) |
 | Font | M PLUS Rounded 1c |
 
 ## Getting started

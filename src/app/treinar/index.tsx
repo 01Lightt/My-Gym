@@ -63,6 +63,7 @@ export default function TreinarScreen() {
 function ActiveWorkoutCard({ workout }: { workout: Workout }) {
   const now = useNow(1000);
   const { done, total } = countSets(workout);
+  // O descanso continua correndo fora da tela do treino (fica salvo no treino): mostra quanto falta
   const restLeftMs = workout.rest ? workout.rest.endsAt - now : 0;
 
   const discard = () =>

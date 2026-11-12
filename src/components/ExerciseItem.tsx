@@ -32,6 +32,7 @@ export function ExerciseItem({ exercise, index, accent, onPress, onMoveUp, onMov
         <WiiText style={styles.name}>{exercise.name}</WiiText>
         <View style={styles.chips}>
           <Chip icon="layers" text={`${exercise.sets} séries`} color={accentColor} />
+          {/* Por tempo: só o tempo de cada série (sem reps nem carga). Por carga: reps e carga sugerida. */}
           {exerciseMode(exercise) === 'time' ? (
             <Chip
               icon="timer"

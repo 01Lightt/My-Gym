@@ -79,6 +79,7 @@ export default function ResultadoScreen() {
                 <Ionicons name="star" size={24} color={colors.accent.orange[1]} />
               </View>
               {records.map((record) => {
+                // Recorde de exercício por tempo (prancha) aparece em segundos; os outros, em kg
                 const format = (value: number) =>
                   record.mode === 'time' ? formatSeconds(value) : `${formatWeight(value)} kg`;
                 return (
